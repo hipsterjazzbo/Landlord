@@ -7,14 +7,14 @@ A general purpose multi-tenancy package for Laravel 4.2+. Accidentally derived f
 
 ## Installation
 
-First off, this package assumes that you have a comulmn on all of your tenant-scoped tables that references which tenant each row belongs to.
+First off, this package assumes that you have a column on all of your tenant-scoped tables that references which tenant each row belongs to.
 
 For example, you might have a `companies` table, and all your other tables might have a `company_id` column (with a foreign key, right?).
 
 To get started, require this package in your composer.json and run composer update:
 
 ```json
-"AuraIsHere/LaravelMultiTenant": "dev-master"
+"aura-is-here/laravel-multi-tenant": "dev-master"
 ```
 
 After updating composer, add the ServiceProvider to the providers array in app/config/app.php
