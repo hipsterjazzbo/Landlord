@@ -20,7 +20,7 @@ To get started, require this package in your composer.json and run composer upda
 After updating composer, add the ServiceProvider to the providers array in app/config/app.php
 
 ```php
-'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider',
+'AuraIsHere\LaravelMultiTenant\LaravelMultiTenantServiceProvider',
 ```
 
 You should also publish the config file:
