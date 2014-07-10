@@ -45,7 +45,14 @@ class TenantScope implements ScopeInterface {
 
 				$query->wheres = array_values($query->wheres);
 
-				$builder->setBindings([]);
+				// We've also got to get rid of the binding for this where clause
+				// We'll do it this long way so we don't interfere with any other
+				// global scopes.
+				$bindings = $builder->getBindings();
+
+				unset($bindings[$key]);
+
+				$builder->setBindings($bindings);
 			}
 		}
 	}
