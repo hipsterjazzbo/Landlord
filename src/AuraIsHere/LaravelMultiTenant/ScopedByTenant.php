@@ -73,6 +73,17 @@ trait ScopedByTenant {
 	}
 
 	/**
+	 * Prepare a raw where clause. Do it this way instead of using where()
+	 * to avoid issues with bindings when removing.
+	 *
+	 * @return string
+	 */
+	public function getTenantWhereClause()
+	{
+		return $this->getQualifiedTenantColumn() . ' = ' . $this->getTenantId();
+	}
+
+	/**
 	 * Override the default findOrFail method so that we can rethrow a more useful exception.
 	 * Otherwise it can be very confusing why queries don't work because of tenant scoping issues.
 	 *

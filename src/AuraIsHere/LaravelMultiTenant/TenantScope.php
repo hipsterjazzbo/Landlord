@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ScopeInterface;
+use Illuminate\Database\Query\Expression;
 
 class TenantScope implements ScopeInterface {
 
@@ -17,7 +18,8 @@ class TenantScope implements ScopeInterface {
 		/** @var \Illuminate\Database\Eloquent\Model|ScopedByTenant $model */
 		$model = $builder->getModel();
 
-		$builder->where($model->getQualifiedTenantColumn(), '=', $model->getTenantId());
+		// Use whereRaw instead of where to avoind issue with bindings when removing
+		$builder->whereRaw($model->getTenantWhereClause());
 	}
 
 	/**
@@ -39,20 +41,15 @@ class TenantScope implements ScopeInterface {
 			// If the where clause is a tenant constraint, we will remove it from the query
 			// and reset the keys on the wheres. This allows this developer to include
 			// the tenant model in a relationship result set that is lazy loaded.
-			if ($this->isTenantConstraint($where, $model->getQualifiedTenantColumn()))
+			if ($this->isTenantConstraint($where, $model))
 			{
 				unset($query->wheres[$key]);
 
 				$query->wheres = array_values($query->wheres);
 
-				// We've also got to get rid of the binding for this where clause
-				// We'll do it this long way so we don't interfere with any other
-				// global scopes.
-				$bindings = $builder->getBindings();
-
-				unset($bindings[$key]);
-
-				$builder->setBindings($bindings);
+				// Just bail after this first one in case the user has manually specified
+				// the same where clause for some weird reason or by some nutso coincidence.
+				break;
 			}
 		}
 	}
@@ -60,13 +57,13 @@ class TenantScope implements ScopeInterface {
 	/**
 	 * Determine if the given where clause is a tenant constraint.
 	 *
-	 * @param  array  $where
-	 * @param  string $column
+	 * @param  array          $where
+	 * @param  ScopedByTenant $model
 	 *
 	 * @return bool
 	 */
-	protected function isTenantConstraint(array $where, $column)
+	protected function isTenantConstraint(array $where, $model)
 	{
-		return $where['type'] == 'Basic' && $where['column'] == $column;
+		return $where['type'] == 'raw' && $where['sql'] == $model->getTenantWhereClause();
 	}
 }
