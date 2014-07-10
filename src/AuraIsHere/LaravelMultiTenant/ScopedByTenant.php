@@ -80,7 +80,7 @@ trait ScopedByTenant {
 	 */
 	public function getTenantWhereClause()
 	{
-		return $this->getQualifiedTenantColumn() . ' = ' . $this->getTenantId();
+		return "{$this->getQualifiedTenantColumn()} = '{$this->getTenantId()}'";
 	}
 
 	/**
