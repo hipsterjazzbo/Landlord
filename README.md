@@ -14,7 +14,7 @@ For example, you might have a `companies` table, and all your other tables might
 To get started, require this package in your composer.json and run composer update:
 
 ```json
-"AuraIsHere/LaravelMultiTenant": "dev-master"
+"aura-is-here/laravel-multi-tenant": "dev-master"
 ```
 
 After updating composer, add the ServiceProvider to the providers array in app/config/app.php
