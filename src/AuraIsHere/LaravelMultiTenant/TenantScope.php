@@ -6,6 +6,8 @@ use Illuminate\Database\Query\Expression;
 
 class TenantScope implements ScopeInterface {
 
+	private static $tenantId;
+
 	/**
 	 * Apply the scope to a given Eloquent query builder.
 	 *
@@ -15,10 +17,12 @@ class TenantScope implements ScopeInterface {
 	 */
 	public function apply(Builder $builder)
 	{
+		if (is_null(static::$tenantId)) return;
+
 		/** @var \Illuminate\Database\Eloquent\Model|ScopedByTenant $model */
 		$model = $builder->getModel();
 
-		// Use whereRaw instead of where to avoind issue with bindings when removing
+		// Use whereRaw instead of where to avoid issues with bindings when removing
 		$builder->whereRaw($model->getTenantWhereClause());
 	}
 
@@ -65,5 +69,15 @@ class TenantScope implements ScopeInterface {
 	protected function isTenantConstraint(array $where, $model)
 	{
 		return $where['type'] == 'raw' && $where['sql'] == $model->getTenantWhereClause();
+	}
+
+	public static function getTenantId()
+	{
+		return static::$tenantId;
+	}
+
+	public static function setTenantId($tenantId)
+	{
+		static::$tenantId = $tenantId;
 	}
 }
