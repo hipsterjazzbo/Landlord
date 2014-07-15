@@ -20,26 +20,4 @@ return [
 
 	'tenant_column' => 'company_id',
 
-	/*
-	|--------------------------------------------------------------------------
-	| Tenant ID
-	|--------------------------------------------------------------------------
-	|
-	| You'll also need to specify how to get the tenant id. This could be
-	| done in any number of ways. You could get the tenant id from the logged
-	| in user:
-	|
-	|     Auth::user()->company_id
-	|
-	| or maybe you've got it stored in your Session somewhere:
-	|
-	|     Session::get('company_id')
-	|
-	*/
-
-	'tenant_id' => function ()
-	{
-		return Auth::user()->company_id;
-	}
-
 ];

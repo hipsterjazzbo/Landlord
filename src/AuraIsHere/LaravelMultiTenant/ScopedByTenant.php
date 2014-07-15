@@ -36,23 +36,6 @@ trait ScopedByTenant {
 	}
 
 	/**
-	 * Get the value to scope the "tenant id" with.
-	 *
-	 * @return string
-	 */
-	public function getTenantId()
-	{
-		// Make sure we can actually get a tenant id
-		if (! is_callable(Config::get('laravel-multi-tenant::tenant_id')))
-		{
-			throw new RuntimeException('The tenant_id config setting must be callable');
-		}
-
-		// Call the tenant_id closure to get the actual id.
-		return call_user_func(Config::get('laravel-multi-tenant::tenant_id'));
-	}
-
-	/**
 	 * Get the name of the "tenant id" column.
 	 *
 	 * @return string
@@ -80,7 +63,10 @@ trait ScopedByTenant {
 	 */
 	public function getTenantWhereClause()
 	{
-		return "{$this->getQualifiedTenantColumn()} = '{$this->getTenantId()}'";
+		$tenantColumn = $this->getQualifiedTenantColumn();
+		$tenantId     = TenantScope::getTenantId();
+
+		return "{$tenantColumn} = '{$tenantId}'";
 	}
 
 	/**
