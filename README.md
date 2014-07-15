@@ -1,7 +1,7 @@
 Laravel Multi Tenant
 ====================
 
-A general purpose multi-tenancy package for Laravel 4.2+. Accidentally derived from the work of [@tonydew](https://github.com/tonydew).
+A general purpose multi-tenancy package for Laravel 4.2+. Accidentally derived from the work of [@tonydew](https://github.com/tonydew), and with help from [@rizqidjamaluddin](https://github.com/rizqidjamaluddin)
 
 **Note:** This is an experimental package. We're figuring out the best way to do this, together. Please have a play, but don't expect it to work perfectly right now. Pull requests welcome :)
 
@@ -37,7 +37,7 @@ First off, you'll have to call `TenantScope::setTenantId($tenantId)` at some poi
 
 You can also call `TenantScope::setTenantId($tenantId)` again at any point to change the tenant that is scoped.
 
-**Warning:** If you haven't yet set a tenant id, or if you unset the tenant id (`TenantScope::setTenantId(null)`), you're requests **will not be scoped**. This can be useful, but it's a good thing to be aware of.
+**Warning:** If you haven't yet set a tenant id, or if you unset the tenant id (`TenantScope::setTenantId(null)`), your requests **will not be scoped**. This can be useful, but it's a good thing to be aware of.
 
 Once you've got that all worked out, simply `use` the trait in all your models that you'd like to scope by tenant:
 
