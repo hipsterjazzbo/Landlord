@@ -1,9 +1,9 @@
 Laravel Multi Tenant
 ====================
 
-A general purpose multi-tenancy package for Laravel 4.2+. Accidentally derived from the work of @tonydew.
+A general purpose multi-tenancy package for Laravel 4.2+. Accidentally derived from the work of [@tonydew](https://github.com/tonydew).
 
-**Note:** This package is in Beta. Use at your own risk.
+**Note:** This is an experimental package. We're figuring out the best way to do this, together. Please have a play, but don't expect it to work perfectly right now. Pull requests welcome :)
 
 ## Installation
 
@@ -29,11 +29,17 @@ You should also publish the config file:
 php artisan config:publish aura-is-here/laravel-multi-tenant
 ```
 
-and set up your `tenant_column` and `tenant_id` callback.
+and set up your `tenant_column` setting.
 
 ## Usage
 
-Simply `use` the trait in all your models that you'd like to scope by tenant:
+First off, you'll have to call `TenantScope::setTenantId($tenantId)` at some point. It could be as part of your login process, or in an oAuth setup method, or wherever.
+
+You can also call `TenantScope::setTenantId($tenantId)` again at any point to change the tenant that is scoped.
+
+**Warning:** If you haven't yet set a tenant id, or if you unset the tenant id (`TenantScope::setTenantId(null)`), you're requests **will not be scoped**. This can be useful, but it's a good thing to be aware of.
+
+Once you've got that all worked out, simply `use` the trait in all your models that you'd like to scope by tenant:
 
 ```php
 <?php
@@ -65,3 +71,7 @@ $allModels = Model::allTenants()->get(); //You can run any fluent query builder 
 When you are developing a multi tenanted application, it can be confusing sometimes why you keep getting `ModelNotFound` exceptions.
 
 Laravel Multi Tenant will catch those exceptions, and re-throw them as `ModelNotFoundForTenant`, to help you out :)
+
+## Contributing
+
+Please! This is not yet a complete solution, but there's no point in all of us re-inventing this wheel over and over. If you find an issue, or have a better way to do something, open an issue or a pull request.
