@@ -7,6 +7,7 @@ use AuraIsHere\LaravelMultiTenant\Exceptions\TenantIdNotSetException;
 class TenantScope implements ScopeInterface {
 
 	private static $tenantId;
+	private static $enabled = true;
 
 	/**
 	 * Apply the scope to a given Eloquent query builder.
@@ -18,7 +19,12 @@ class TenantScope implements ScopeInterface {
 	 */
 	public function apply(Builder $builder)
 	{
-		if (is_null(self::getTenantId())) throw new TenantIdNotSetException;
+		if (is_null(self::getTenantId()))
+		{
+			if (self::$enabled) throw new TenantIdNotSetException;
+
+			return;
+		}
 
 		/** @var \Illuminate\Database\Eloquent\Model|ScopedByTenant $model */
 		$model = $builder->getModel();
@@ -80,5 +86,16 @@ class TenantScope implements ScopeInterface {
 	public static function setTenantId($tenantId)
 	{
 		static::$tenantId = $tenantId;
+		self::enable();
+
+
+	public static function disable()
+	{
+		self::$enabled = false;
+	}
+
+	public static function enable()
+	{
+		self::$enabled = true;
 	}
 }
