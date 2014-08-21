@@ -1,12 +1,12 @@
 <?php namespace AuraIsHere\LaravelMultiTenant;
 
+use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ScopeInterface;
 use AuraIsHere\LaravelMultiTenant\Exceptions\TenantIdNotSetException;
 
 class TenantScope implements ScopeInterface {
 
-	private static $tenantId;
 	private static $enabled = true;
 
 	/**
@@ -80,14 +80,15 @@ class TenantScope implements ScopeInterface {
 
 	public static function getTenantId()
 	{
-		return static::$tenantId;
+		return Session::get('laravel-multi-tenant::tenant_id');
 	}
 
 	public static function setTenantId($tenantId)
 	{
-		static::$tenantId = $tenantId;
 		self::enable();
 
+		Session::put('laravel-multi-tenant::tenant_id', $tenantId);
+	}
 
 	public static function disable()
 	{
