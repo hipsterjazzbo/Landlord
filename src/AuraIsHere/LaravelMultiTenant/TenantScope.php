@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ScopeInterface;
-use Illuminate\Database\Query\Expression;
+use AuraIsHere\LaravelMultiTenant\Exceptions\TenantIdNotSetException;
 
 class TenantScope implements ScopeInterface {
 
@@ -13,11 +13,12 @@ class TenantScope implements ScopeInterface {
 	 *
 	 * @param  \Illuminate\Database\Eloquent\Builder $builder
 	 *
+	 * @throws Exceptions\TenantIdNotSetException
 	 * @return void
 	 */
 	public function apply(Builder $builder)
 	{
-		if (is_null(static::$tenantId)) return;
+		if (is_null(self::getTenantId())) throw new TenantIdNotSetException;
 
 		/** @var \Illuminate\Database\Eloquent\Model|ScopedByTenant $model */
 		$model = $builder->getModel();

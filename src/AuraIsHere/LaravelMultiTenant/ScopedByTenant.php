@@ -1,8 +1,8 @@
 <?php namespace AuraIsHere\LaravelMultiTenant;
 
-use \RuntimeException;
-use \Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use AuraIsHere\LaravelMultiTenant\Exceptions\ModelNotFoundForTenantException;
 
 /**
  * Class ScopedByTenant

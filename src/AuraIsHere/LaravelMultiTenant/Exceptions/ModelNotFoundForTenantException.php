@@ -1,4 +1,4 @@
-<?php namespace AuraIsHere\LaravelMultiTenant;
+<?php namespace AuraIsHere\LaravelMultiTenant\Exceptions;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
