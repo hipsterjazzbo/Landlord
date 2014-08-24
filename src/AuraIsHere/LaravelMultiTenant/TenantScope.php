@@ -9,18 +9,60 @@ use AuraIsHere\LaravelMultiTenant\Exceptions\TenantBadFormatException;
 
 class TenantScope implements ScopeInterface
 {
-    protected $tenants;
+    protected $tenants = [];
 
     /**
-     * Define the array of column=>id to use as tenant filters.
+     * return tenants
      *
-     * @param  array $tenants
+     * @return array
+     */
+    public function getTenants()
+    {
+        return $this->tenants;
+    }
+
+    /**
+     * Add $column = $id to the current tenant array
+     *
+     * @param  string $column
+     * @param  mixed $id
      *
      * @return void
      */
-    public function setTenants(array $tenants)
+    public function addTenant($column, $id)
     {
-        $this->tenants = $tenants;
+        $this->tenants[$column] = $id;
+    }
+
+    /**
+     * Remove $column = $id from the current tenant array
+     *
+     * @param  string $column
+     * @param  mixed $id
+     *
+     * @return boolean
+     */
+    public function removeTenant($column)
+    {
+        if ($this->hasTenant($column)) {
+            unset($this->tenants[$column]);
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Test is current tenant includes a column
+     *
+     * @param  string $column
+     *
+     * @return boolean
+     */
+    public function hasTenant($column)
+    {
+        return isset($this->tenants[$column]);
     }
 
     /**
@@ -88,12 +130,12 @@ class TenantScope implements ScopeInterface
             $tenants = [];
             if (is_array($model->tenants)) {
                 foreach ($model->tenants as $key => $column) {
-                    $tenants[$column] = $this->getTenantId($column);
+                    $tenants[$column] = $this->getTenantId($column, $model);
                 }
                 return $tenants;
             } else {
                 $column = $model->tenants;
-                $id = $this->getTenantId($column);
+                $id = $this->getTenantId($column, $model);
                 return [$column => $id];
             }
         } else {
@@ -103,19 +145,19 @@ class TenantScope implements ScopeInterface
         }
     }
 
-    protected function getTenantId($column)
+    protected function getTenantId($column, $model)
     {
         if (is_string($column)) {
             if (isset($this->tenants[$column])) {
                 return $this->tenants[$column];
             } else {
                 throw new TenantColumnUnknownException(
-                    'Unknown column "'.$column.'" in tenants scope "'.var_dump($this->tenants).'"'
+                    get_class($model).': tenant column "'.$column.'" NOT found in tenants scope "'.json_encode($this->tenants).'"'
                 );
             }
         } else {
             throw new TenantBadFormatException(
-                '"tenants" variable in "'.get_class($model).'" MUST be a string or an array of strings'
+                get_class($model).': "tenants" variable in "'.get_class($model).'" MUST be a string or an array of strings'
             );
         }
     }
