@@ -7,7 +7,10 @@ use AuraIsHere\LaravelMultiTenant\Exceptions\TenantIdNotSetException;
 
 class TenantScope implements ScopeInterface {
 
-	private static $enabled = true;
+	protected $enabled = true;
+
+	protected $tenantId;
+	protected $tenantColumn;
 
 	/**
 	 * Apply the scope to a given Eloquent query builder.
@@ -21,7 +24,7 @@ class TenantScope implements ScopeInterface {
 	{
 		if (is_null(self::getTenantId()))
 		{
-			if (self::$enabled) throw new TenantIdNotSetException;
+			if ($this->enabled) throw new TenantIdNotSetException;
 
 			return;
 		}
@@ -30,7 +33,7 @@ class TenantScope implements ScopeInterface {
 		$model = $builder->getModel();
 
 		// Use whereRaw instead of where to avoid issues with bindings when removing
-		$builder->whereRaw($model->getTenantWhereClause());
+		$builder->whereRaw($this->getTenantWhereClause($model));
 	}
 
 	/**
@@ -75,28 +78,54 @@ class TenantScope implements ScopeInterface {
 	 */
 	protected function isTenantConstraint(array $where, $model)
 	{
-		return $where['type'] == 'raw' && $where['sql'] == $model->getTenantWhereClause();
+		return $where['type'] == 'raw' && $where['sql'] == $this->getTenantWhereClause($model);
 	}
 
-	public static function getTenantId()
+	public function getTenantColumn()
 	{
-		return Session::get('laravel-multi-tenant::tenant_id');
+		return $this->tenantColumn;
 	}
 
-	public static function setTenantId($tenantId)
+	public function setTenantColumn($tenantColumn)
 	{
 		self::enable();
 
-		Session::put('laravel-multi-tenant::tenant_id', $tenantId);
+		$this->tenantColumn = $tenantColumn;
 	}
 
-	public static function disable()
+	public function getTenantId()
 	{
-		self::$enabled = false;
+		return $this->tenantId;
 	}
 
-	public static function enable()
+	public function setTenantId($tenantId)
 	{
-		self::$enabled = true;
+		self::enable();
+
+		$this->tenantId = $tenantId;
+	}
+
+	public function disable()
+	{
+		$this->enabled = false;
+	}
+
+	public function enable()
+	{
+		$this->enabled = true;
+	}
+
+	/**
+	 * Prepare a raw where clause. Do it this way instead of using where()
+	 * to avoid issues with bindings when removing.
+	 *
+	 * @return string
+	 */
+	protected function getTenantWhereClause($model)
+	{
+		$tenantColumn = $model->getTable() . '.' . $this->getTenantColumn();
+		$tenantId     = TenantScope::getTenantId();
+
+		return "{$tenantColumn} = '{$tenantId}'";
 	}
 }

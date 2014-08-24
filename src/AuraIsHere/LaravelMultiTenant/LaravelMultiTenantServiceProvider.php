@@ -29,7 +29,19 @@ class LaravelMultiTenantServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		// Register our config
-		$this->app['config']->package('aura-is-here/laravel-multi-tenant', __DIR__ . '/../../config');
+		//$this->app['config']->package('aura-is-here/laravel-multi-tenant', __DIR__ . '/../../config');
+
+		// Register our tenant scope instance
+		$this->app->bindshared('AuraIsHere\LaravelMultiTenant\TenantScope', function ($app) {
+			return new TenantScope();
+		});
+
+		// Define alias 'TenantScope'
+		$this->app->booting(function()
+		{
+		  $loader = \Illuminate\Foundation\AliasLoader::getInstance();
+		  $loader->alias('TenantScope', 'AuraIsHere\LaravelMultiTenant\TenantScopeFacade');
+		});
 	}
 
 	/**

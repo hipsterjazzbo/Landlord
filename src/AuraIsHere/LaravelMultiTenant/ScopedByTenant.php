@@ -1,5 +1,6 @@
 <?php namespace AuraIsHere\LaravelMultiTenant;
 
+use TenantScope;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use AuraIsHere\LaravelMultiTenant\Exceptions\ModelNotFoundForTenantException;
@@ -17,7 +18,7 @@ trait ScopedByTenant {
 	public static function bootScopedByTenant()
 	{
 		// Add the global scope that will handle all operations except create()
-		static::addGlobalScope(new TenantScope);
+		static::addGlobalScope(TenantScopeFacade::getFacadeRoot());
 
 		// Add an observer that will automatically add the tenant id when create()-ing
 		static::observe(new TenantObserver);
@@ -32,7 +33,7 @@ trait ScopedByTenant {
 	 */
 	public static function allTenants()
 	{
-		return with(new static)->newQueryWithoutScope(new TenantScope);
+		return with(new static)->newQueryWithoutScope(TenantScopeFacade::getFacadeRoot());
 	}
 
 	/**
@@ -42,7 +43,7 @@ trait ScopedByTenant {
 	 */
 	public function getTenantColumn()
 	{
-		return Config::get('laravel-multi-tenant::tenant_column');
+		return TenantScope::getTenantColumn();
 	}
 
 	/**
