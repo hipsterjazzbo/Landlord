@@ -109,7 +109,9 @@ class TenantScope implements ScopeInterface
             if (isset($this->tenants[$column])) {
                 return $this->tenants[$column];
             } else {
-                throw new TenantColumnUnknownException;
+                throw new TenantColumnUnknownException(
+                    'Unknown column "'.$column.'" in tenants scope "'.var_dump($this->tenants).'"'
+                );
             }
         } else {
             throw new TenantBadFormatException(

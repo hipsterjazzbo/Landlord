@@ -31,9 +31,9 @@ trait ScopedByTenant {
 	 *
 	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	public function allTenants()
+	public static function allTenants()
 	{
-		return $this->newQueryWithoutScope(TenantScopeFacade::getFacadeRoot());
+		return with(new static)->newQueryWithoutScope(TenantScopeFacade::getFacadeRoot());
 	}
 
 	/**
