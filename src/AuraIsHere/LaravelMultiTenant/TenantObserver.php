@@ -15,10 +15,9 @@ class TenantObserver {
 		// If the model has had the global scope removed, bail
 		if (! $model->hasGlobalScope(TenantScopeFacade::getFacadeRoot())) return;
 
-		// If there is no tenant set, bail
-		if (is_null(TenantScope::getTenantId())) return;
-
 		// Otherwise, scope the new model
-		$model->{TenantScope::getTenantColumn()} = TenantScope::getTenantId();
+		foreach (TenantScope::getModelTenants($model) as $column => $id) {
+			$model->{$column} = $id;
+		}
 	}
 } 

@@ -31,43 +31,9 @@ trait ScopedByTenant {
 	 *
 	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	public static function allTenants()
+	public function allTenants()
 	{
-		return with(new static)->newQueryWithoutScope(TenantScopeFacade::getFacadeRoot());
-	}
-
-	/**
-	 * Get the name of the "tenant id" column.
-	 *
-	 * @return string
-	 */
-	public function getTenantColumn()
-	{
-		return TenantScope::getTenantColumn();
-	}
-
-	/**
-	 * Get the fully qualified "tenant id" column.
-	 *
-	 * @return string
-	 */
-	public function getQualifiedTenantColumn()
-	{
-		return $this->getTable() . '.' . $this->getTenantColumn();
-	}
-
-	/**
-	 * Prepare a raw where clause. Do it this way instead of using where()
-	 * to avoid issues with bindings when removing.
-	 *
-	 * @return string
-	 */
-	public function getTenantWhereClause()
-	{
-		$tenantColumn = $this->getQualifiedTenantColumn();
-		$tenantId     = TenantScope::getTenantId();
-
-		return "{$tenantColumn} = '{$tenantId}'";
+		return $this->newQueryWithoutScope(TenantScopeFacade::getFacadeRoot());
 	}
 
 	/**
