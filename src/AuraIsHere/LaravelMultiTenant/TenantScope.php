@@ -22,30 +22,30 @@ class TenantScope implements ScopeInterface
     }
 
     /**
-     * Add $column = $id to the current tenant array
+     * Add $attribute => $id to the current tenants array
      *
-     * @param  string $column
+     * @param  string $attribute
      * @param  mixed $id
      *
      * @return void
      */
-    public function addTenant($column, $id)
+    public function addTenant($attribute, $id)
     {
-        $this->tenants[$column] = $id;
+        $this->tenants[$attribute] = $id;
     }
 
     /**
-     * Remove $column = $id from the current tenant array
+     * Remove $attribute => $id from the current tenants array
      *
-     * @param  string $column
+     * @param  string $attribute
      * @param  mixed $id
      *
      * @return boolean
      */
-    public function removeTenant($column)
+    public function removeTenant($attribute)
     {
-        if ($this->hasTenant($column)) {
-            unset($this->tenants[$column]);
+        if ($this->hasTenant($attribute)) {
+            unset($this->tenants[$attribute]);
 
             return true;
         } else {
@@ -54,15 +54,15 @@ class TenantScope implements ScopeInterface
     }
 
     /**
-     * Test is current tenant includes a column
+     * Test is current tenant includes a given attribute
      *
-     * @param  string $column
+     * @param  string $attribute
      *
      * @return boolean
      */
-    public function hasTenant($column)
+    public function hasTenant($attribute)
     {
-        return isset($this->tenants[$column]);
+        return isset($this->tenants[$attribute]);
     }
 
     /**
@@ -80,8 +80,8 @@ class TenantScope implements ScopeInterface
         $model = $builder->getModel();
 
         // Use whereRaw instead of where to avoid issues with bindings when removing
-        foreach ($this->getModelTenants($model) as $column => $id) {
-            $builder->whereRaw($this->getTenantWhereClause($model, $column, $id));
+        foreach ($this->getModelTenants($model) as $attribute => $id) {
+            $builder->whereRaw($this->getTenantWhereClause($model, $attribute, $id));
         }
     }
 
@@ -99,12 +99,12 @@ class TenantScope implements ScopeInterface
 
         $query = $builder->getQuery();
 
-        foreach ($this->getModelTenants($model) as $column => $id) {
+        foreach ($this->getModelTenants($model) as $attribute => $id) {
             foreach ((array) $query->wheres as $key => $where) {
                 // If the where clause is a tenant constraint, we will remove it from the query
                 // and reset the keys on the wheres. This allows this developer to include
                 // the tenant model in a relationship result set that is lazy loaded.
-                if ($this->isTenantConstraint($where, $model, $column, $id)) {
+                if ($this->isTenantConstraint($where, $model, $attribute, $id)) {
                     unset($query->wheres[$key]);
     
                     $query->wheres = array_values($query->wheres);
@@ -118,7 +118,7 @@ class TenantScope implements ScopeInterface
     }
 
     /**
-     * Determine which tenants column=>id are really in used for this model.
+     * Return which attribute=>id are really in used for this model.
      *
      * @param  ScopedByTenant $model
      *
@@ -126,38 +126,37 @@ class TenantScope implements ScopeInterface
      */
     public function getModelTenants($model)
     {
-        if (isset($model->tenants)) {
-            $tenants = [];
-            if (is_array($model->tenants)) {
-                foreach ($model->tenants as $key => $column) {
-                    $tenants[$column] = $this->getTenantId($column, $model);
+        if (isset($model->tenantAttribute)) {
+            if (is_array($model->tenantAttribute)) {
+                $tenants = [];
+                foreach ($model->tenantAttribute as $key => $attribute) {
+                    $tenants[$attribute] = $this->getTenantId($attribute, $model);
                 }
                 return $tenants;
             } else {
-                $column = $model->tenants;
-                $id = $this->getTenantId($column, $model);
-                return [$column => $id];
+                $attribute = $model->tenantAttribute;
+                return [$attribute => $this->getTenantId($attribute, $model)];
             }
         } else {
             throw new TenantNotSetException(
-                'You MUST define a "tenants" variable in "'.get_class($model).'" to define which column(s) will be used as tenant'
+                'You MUST define a "tenants" variable in "'.get_class($model).'" to define which attribute(s) will be used as tenant'
             );
         }
     }
 
-    protected function getTenantId($column, $model)
+    protected function getTenantId($attribute, $model)
     {
-        if (is_string($column)) {
-            if (isset($this->tenants[$column])) {
-                return $this->tenants[$column];
+        if (is_string($attribute)) {
+            if (isset($this->tenants[$attribute])) {
+                return $this->tenants[$attribute];
             } else {
                 throw new TenantColumnUnknownException(
-                    get_class($model).': tenant column "'.$column.'" NOT found in tenants scope "'.json_encode($this->tenants).'"'
+                    get_class($model).': tenant attribute "'.$attribute.'" NOT found in tenants scope "'.json_encode($this->tenants).'"'
                 );
             }
         } else {
             throw new TenantBadFormatException(
-                get_class($model).': "tenants" variable in "'.get_class($model).'" MUST be a string or an array of strings'
+                get_class($model).': "tenantAttribute" variable in "'.get_class($model).'" MUST be a string or an array of strings'
             );
         }
     }
@@ -170,9 +169,9 @@ class TenantScope implements ScopeInterface
      *
      * @return bool
      */
-    protected function isTenantConstraint(array $where, $model, $column, $id)
+    protected function isTenantConstraint(array $where, $model, $attribute, $id)
     {
-        return $where['type'] == 'raw' && $where['sql'] == $this->getTenantWhereClause($model, $column, $id);
+        return $where['type'] == 'raw' && $where['sql'] == $this->getTenantWhereClause($model, $attribute, $id);
     }
 
     /**
@@ -181,11 +180,11 @@ class TenantScope implements ScopeInterface
      *
      * @return string
      */
-    protected function getTenantWhereClause($model, $column, $id)
+    protected function getTenantWhereClause($model, $attribute, $id)
     {
-        $tenantColumn = $model->getTable() . '.' . $column;
+        $tenantAttribute = $model->getTable() . '.' . $attribute;
         $tenantId     = $id;
 
-        return "{$tenantColumn} = '{$tenantId}'";
+        return "{$tenantAttribute} = '{$tenantId}'";
     }
 }
