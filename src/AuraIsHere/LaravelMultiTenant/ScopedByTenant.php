@@ -18,7 +18,7 @@ trait ScopedByTenant {
 	public static function bootScopedByTenant()
 	{
 		// Add the global scope that will handle all operations except create()
-		static::addGlobalScope(TenantScopeFacade::getFacadeRoot());
+		static::addGlobalScope($this->getTenantScope());
 
 		// Add an observer that will automatically add the tenant id when create()-ing
 		static::observe(new TenantObserver);
@@ -33,7 +33,7 @@ trait ScopedByTenant {
 	 */
 	public static function allTenants()
 	{
-		return with(new static)->newQueryWithoutScope(TenantScopeFacade::getFacadeRoot());
+		return with(new static)->newQueryWithoutScope($this->getTenantScope());
 	}
 
 	/**
@@ -57,4 +57,14 @@ trait ScopedByTenant {
 			throw with(new ModelNotFoundForTenantException())->setModel(get_called_class());
 		}
 	}
+
+	/**
+	 * Returns tenant scope for this model.
+	 *
+	 * @return Illuminate\Database\Eloquent\ScopeInterface
+	 */
+	protected function getTenantScope()
+	{
+		return TenantScopeFacade::getFacadeRoot();
+	}	
 } 
