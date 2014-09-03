@@ -1,8 +1,10 @@
-<?php namespace AuraIsHere\LaravelMultiTenant;
+<?php namespace AuraIsHere\LaravelMultiTenant\Traits;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use AuraIsHere\LaravelMultiTenant\Exceptions\ModelNotFoundForTenantException;
+use AuraIsHere\LaravelMultiTenant\TenantObserver;
+use AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade;
+use AuraIsHere\LaravelMultiTenant\Exceptions\TenantModelNotFoundException;
 
 /**
  * Class ScopedByTenant
@@ -42,7 +44,7 @@ trait ScopedByTenant {
 	 * @param       $id
 	 * @param array $columns
 	 *
-	 * @throws ModelNotFoundForTenantException
+	 * @throws TenantModelNotFoundException
 	 */
 	public static function findOrFail($id, $columns = array('*'))
 	{
@@ -53,14 +55,14 @@ trait ScopedByTenant {
 
 		catch (ModelNotFoundException $e)
 		{
-			throw with(new ModelNotFoundForTenantException())->setModel(get_called_class());
+			throw with(new TenantModelNotFoundException())->setModel(get_called_class());
 		}
 	}
 
 	/**
 	 * Returns tenant scope for this model.
 	 *
-	 * @return Illuminate\Database\Eloquent\ScopeInterface
+	 * @return \Illuminate\Database\Eloquent\ScopeInterface
 	 */
 	protected static function getTenantScope()
 	{

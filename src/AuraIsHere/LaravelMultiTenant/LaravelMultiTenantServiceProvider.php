@@ -37,7 +37,7 @@ class LaravelMultiTenantServiceProvider extends ServiceProvider {
 		$this->app->booting(function()
 		{
 		  $loader = \Illuminate\Foundation\AliasLoader::getInstance();
-		  $loader->alias('TenantScope', 'AuraIsHere\LaravelMultiTenant\TenantScopeFacade');
+		  $loader->alias('TenantScope', 'AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade');
 		});
 	}
 

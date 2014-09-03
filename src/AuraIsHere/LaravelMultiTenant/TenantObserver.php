@@ -1,7 +1,8 @@
 <?php namespace AuraIsHere\LaravelMultiTenant;
 
-use TenantScope;
 use Illuminate\Database\Eloquent\Model;
+use AuraIsHere\LaravelMultiTenant\Traits\ScopedByTenant;
+use AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade;
 
 class TenantObserver {
 
