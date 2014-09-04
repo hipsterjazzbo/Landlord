@@ -44,11 +44,11 @@ Once you've got that all worked out, simply `use` the trait in all your models t
 ```php
 <?php
 
-use AuraIsHere\LaravelMultiTenant\ScopedByTenant;
+use AuraIsHere\LaravelMultiTenant\Traits\TenantScopedModelTrait;
 
 class Model extends Eloquent {
 
-    use ScopedByTenant;
+    use TenantScopedModelTrait;
 }
 ```
 

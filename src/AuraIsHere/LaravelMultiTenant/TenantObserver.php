@@ -1,15 +1,15 @@
 <?php namespace AuraIsHere\LaravelMultiTenant;
 
 use Illuminate\Database\Eloquent\Model;
-use AuraIsHere\LaravelMultiTenant\Traits\ScopedByTenant;
 use AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade;
+use AuraIsHere\LaravelMultiTenant\Traits\TenantScopedModelTrait;
 
 class TenantObserver {
 
 	/**
 	 * Sets the tenant id automatically when creating models
 	 *
-	 * @param Model|ScopedByTenant $model
+	 * @param Model|TenantScopedModelTrait $model
 	 */
 	public function creating(Model $model)
 	{
@@ -17,8 +17,8 @@ class TenantObserver {
 		if (! $model->hasGlobalScope(TenantScopeFacade::getFacadeRoot())) return;
 
 		// Otherwise, scope the new model
-		foreach (TenantScope::getModelTenants($model) as $column => $id) {
-			$model->{$column} = $id;
+		foreach (TenantScope::getModelTenants() as $tenantColumn => $tenantId) {
+			$model->{$tenantColumn} = $tenantId;
 		}
 	}
 } 

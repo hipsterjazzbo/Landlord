@@ -1,22 +1,25 @@
 <?php namespace AuraIsHere\LaravelMultiTenant\Traits;
 
-use Illuminate\Support\Facades\Config;
+use AuraIsHere\LaravelMultiTenant\TenantScope;
+use Config;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use AuraIsHere\LaravelMultiTenant\TenantObserver;
 use AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade;
 use AuraIsHere\LaravelMultiTenant\Exceptions\TenantModelNotFoundException;
 
 /**
- * Class ScopedByTenant
+ * Class TenantScopedModelTrait
  *
  * @package AuraIsHere\LaravelMultiTenant
  *
  * @method static void addGlobalScope(\Illuminate\Database\Eloquent\ScopeInterface $scope)
  * @method static void observe(object $class)
  */
-trait ScopedByTenant {
+trait TenantScopedModelTrait {
 
-	public static function bootScopedByTenant()
+	public $tenantColumns = null;
+
+	public static function bootTenantScopedModelTrait()
 	{
 		// Add the global scope that will handle all operations except create()
 		static::addGlobalScope(static::getTenantScope());
@@ -35,6 +38,30 @@ trait ScopedByTenant {
 	public static function allTenants()
 	{
 		return with(new static)->newQueryWithoutScope(static::getTenantScope());
+	}
+
+	/**
+	 * Get the name of the "tenant id" column.
+	 *
+	 * @return string
+	 */
+	public function getTenantColumns()
+	{
+		return is_null($this->tenantColumns) ? Config::get('laravel-multi-tenant::default_tenant_columns') : $this->tenantColumns;
+	}
+
+	/**
+	 * Prepare a raw where clause. Do it this way instead of using where()
+	 * to avoid issues with bindings when removing.
+	 *
+	 * @param $tenantColumn
+	 * @param $tenantId
+	 *
+	 * @return string
+	 */
+	public function getTenantWhereClause($tenantColumn, $tenantId)
+	{
+		return "{$this->getTable()}.{$tenantColumn} = '{$tenantId}'";
 	}
 
 	/**
@@ -67,5 +94,5 @@ trait ScopedByTenant {
 	protected static function getTenantScope()
 	{
 		return TenantScopeFacade::getFacadeRoot();
-	}	
+	}
 } 

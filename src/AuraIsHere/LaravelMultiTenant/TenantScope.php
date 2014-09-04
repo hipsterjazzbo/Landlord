@@ -1,15 +1,17 @@
 <?php namespace AuraIsHere\LaravelMultiTenant;
 
-use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ScopeInterface;
-use AuraIsHere\LaravelMultiTenant\Traits\ScopedByTenant;
-use AuraIsHere\LaravelMultiTenant\Exceptions\TenantNotSetException;
-use AuraIsHere\LaravelMultiTenant\Exceptions\TenantBadFormatException;
 use AuraIsHere\LaravelMultiTenant\Exceptions\TenantColumnUnknownException;
 
 class TenantScope implements ScopeInterface {
 
+	private $enabled = true;
+
+	/** @var \Illuminate\Database\Eloquent\Model|\AuraIsHere\LaravelMultiTenant\Traits\TenantScopedModelTrait */
+	private $model;
+
+	/** @var array The tenant scopes currently set */
 	protected $tenants = [];
 
 	/**
@@ -23,30 +25,32 @@ class TenantScope implements ScopeInterface {
 	}
 
 	/**
-	 * Add $attribute => $id to the current tenants array
+	 * Add $tenantColumn => $tenantId to the current tenants array
 	 *
-	 * @param  string $attribute
-	 * @param  mixed  $id
+	 * @param  string $tenantColumn
+	 * @param  mixed  $tenantId
 	 *
 	 * @return void
 	 */
-	public function addTenant($attribute, $id)
+	public function addTenant($tenantColumn, $tenantId)
 	{
-		$this->tenants[$attribute] = $id;
+		$this->enable();
+
+		$this->tenants[$tenantColumn] = $tenantId;
 	}
 
 	/**
-	 * Remove $attribute => $id from the current tenants array
+	 * Remove $tenantColumn => $id from the current tenants array
 	 *
-	 * @param  string $attribute
+	 * @param  string $tenantColumn
 	 *
 	 * @return boolean
 	 */
-	public function removeTenant($attribute)
+	public function removeTenant($tenantColumn)
 	{
-		if ($this->hasTenant($attribute))
+		if ($this->hasTenant($tenantColumn))
 		{
-			unset($this->tenants[$attribute]);
+			unset($this->tenants[$tenantColumn]);
 
 			return true;
 		}
@@ -58,15 +62,15 @@ class TenantScope implements ScopeInterface {
 	}
 
 	/**
-	 * Test is current tenant includes a given attribute
+	 * Test whether current tenants include a given tenant
 	 *
-	 * @param  string $attribute
+	 * @param  string $tenantColumn
 	 *
 	 * @return boolean
 	 */
-	public function hasTenant($attribute)
+	public function hasTenant($tenantColumn)
 	{
-		return isset($this->tenants[$attribute]);
+		return isset($this->tenants[$tenantColumn]);
 	}
 
 	/**
@@ -74,18 +78,18 @@ class TenantScope implements ScopeInterface {
 	 *
 	 * @param Builder|\Illuminate\Database\Query\Builder $builder
 	 *
-	 * @throws Exceptions\TenantNotSetException
-	 * @throws Exceptions\TenantColumnUnknownException
 	 * @return void
 	 */
 	public function apply(Builder $builder)
 	{
-		$model = $builder->getModel();
+		if (! $this->enabled) return;
+
+		$this->model = $builder->getModel();
 
 		// Use whereRaw instead of where to avoid issues with bindings when removing
-		foreach ($this->getModelTenants($model) as $attribute => $id)
+		foreach ($this->getModelTenants() as $tenantColumn => $tenantId)
 		{
-			$builder->whereRaw($this->getTenantWhereClause($model, $attribute, $id));
+			$builder->whereRaw($this->model->getTenantWhereClause($tenantColumn, $tenantId));
 		}
 	}
 
@@ -94,23 +98,22 @@ class TenantScope implements ScopeInterface {
 	 *
 	 * @param Builder|\Illuminate\Database\Query\Builder $builder
 	 *
-	 * @throws TenantNotSetException
 	 * @return void
 	 */
 	public function remove(Builder $builder)
 	{
-		$model = $builder->getModel();
+		$this->model = $builder->getModel();
 
 		$query = $builder->getQuery();
 
-		foreach ($this->getModelTenants($model) as $attribute => $id)
+		foreach ($this->getModelTenants() as $tenantColumn => $tenantId)
 		{
 			foreach ((array) $query->wheres as $key => $where)
 			{
 				// If the where clause is a tenant constraint, we will remove it from the query
 				// and reset the keys on the wheres. This allows this developer to include
 				// the tenant model in a relationship result set that is lazy loaded.
-				if ($this->isTenantConstraint($where, $model, $attribute, $id))
+				if ($this->isTenantConstraint($where, $tenantColumn, $tenantId))
 				{
 					unset($query->wheres[$key]);
 
@@ -125,112 +128,66 @@ class TenantScope implements ScopeInterface {
 	}
 
 	/**
-	 * Return which attribute => id are really in used for this model.
-	 *
-	 * @param  ScopedByTenant|\Illuminate\Database\Eloquent\Model $model
-	 *
-	 * @throws TenantBadFormatException
-	 * @throws TenantColumnUnknownException
-	 * @throws TenantNotSetException
+	 * Return which tenantColumn => tenantId are really in used for this model.
 	 *
 	 * @return array
 	 */
-	public function getModelTenants($model)
+	public function getModelTenants()
 	{
-		if (isset($model->tenantAttribute))
+		$modelTenantColumns = $this->model->getTenantColumns();
+
+		if (! is_array($modelTenantColumns)) $modelTenantColumns = [$modelTenantColumns];
+
+		$modelTenants = [];
+
+		foreach ($modelTenantColumns as $tenantColumn)
 		{
-			if (is_array($model->tenantAttribute))
-			{
-				$tenants = [];
-
-				foreach ($model->tenantAttribute as $key => $attribute)
-				{
-					$tenants[$attribute] = $this->getTenantId($attribute, $model);
-				}
-
-				return $tenants;
-			}
-
-			else
-			{
-				$attribute = $model->tenantAttribute;
-
-				return [$attribute => $this->getTenantId($attribute, $model)];
-			}
+			$modelTenants[$tenantColumn] = $this->getTenantId($tenantColumn);
 		}
 
-		else
-		{
-			throw new TenantNotSetException(
-				'You MUST define a "tenants" variable in "' . get_class($model) . '" to define which attribute(s) will be used as tenant'
-			);
-		}
+		return $modelTenants;
 	}
 
 	/**
-	 * @param $attribute
-	 * @param $model
+	 * @param $tenantColumn
 	 *
-	 * @throws TenantBadFormatException
 	 * @throws TenantColumnUnknownException
 	 *
-	 * @return mixed
+	 * @return mixed The id of the tenant
 	 */
-	protected function getTenantId($attribute, $model)
+	public function getTenantId($tenantColumn)
 	{
-		if (is_string($attribute))
+		if (! isset($this->tenants[$tenantColumn]))
 		{
-			if (isset($this->tenants[$attribute]))
-			{
-				return $this->tenants[$attribute];
-			}
-
-			else
-			{
-				throw new TenantColumnUnknownException(
-					get_class($model) . ': tenant attribute "' . $attribute . '" NOT found in tenants scope "' . json_encode($this->tenants) . '"'
-				);
-			}
-		}
-
-		else
-		{
-			throw new TenantBadFormatException(
-				get_class($model) . ': "tenantAttribute" variable in "' . get_class($model) . '" MUST be a string or an array of strings'
+			throw new TenantColumnUnknownException(
+				get_class($this->model) . ': tenant column "' . $tenantColumn . '" NOT found in tenants scope "' . json_encode($this->tenants) . '"'
 			);
 		}
+
+		return $this->tenants[$tenantColumn];
 	}
 
 	/**
 	 * Determine if the given where clause is a tenant constraint.
 	 *
-	 * @param  array                                              $where
-	 * @param  ScopedByTenant|\Illuminate\Database\Eloquent\Model $model
-	 * @param                                                     $attribute
-	 * @param                                                     $id
+	 * @param  array  $where
+	 * @param  string $tenantColumn
+	 * @param  mixed  $tenantId
 	 *
 	 * @return bool
 	 */
-	protected function isTenantConstraint(array $where, $model, $attribute, $id)
+	protected function isTenantConstraint(array $where, $tenantColumn, $tenantId)
 	{
-		return $where['type'] == 'raw' && $where['sql'] == $this->getTenantWhereClause($model, $attribute, $id);
+		return $where['type'] == 'raw' && $where['sql'] == $this->model->getTenantWhereClause($tenantColumn, $tenantId);
 	}
 
-	/**
-	 * Prepare a raw where clause. Do it this way instead of using where()
-	 * to avoid issues with bindings when removing.
-	 *
-	 * @param \Illuminate\Database\Eloquent\Model|ScopedByTenant $model
-	 * @param string                                             $attribute
-	 * @param mixed                                              $id
-	 *
-	 * @return string
-	 */
-	protected function getTenantWhereClause($model, $attribute, $id)
+	public function disable()
 	{
-		$tenantAttribute = $model->getTable() . '.' . $attribute;
-		$tenantId        = $id;
+		$this->enabled = false;
+	}
 
-		return "{$tenantAttribute} = '{$tenantId}'";
+	public function enable()
+	{
+		$this->enabled = true;
 	}
 }
