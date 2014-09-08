@@ -1,6 +1,14 @@
 Laravel Multi Tenant
 ====================
 
+**HI THERE**
+
+This package is currently in a state of flux. If you'd like to take it for a spin, please have a go with the refactor branch.
+
+Thanks!
+
+***
+
 A general purpose multi-tenancy package for Laravel 4.2+. Accidentally derived from the work of [@tonydew](https://github.com/tonydew), and with help from [@rizqidjamaluddin](https://github.com/rizqidjamaluddin)
 
 **Note:** This is an experimental package. We're figuring out the best way to do this, together. Please have a play, but don't expect it to work perfectly right now. Pull requests welcome :)
