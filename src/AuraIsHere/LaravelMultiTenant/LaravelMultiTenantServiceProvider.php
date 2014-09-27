@@ -1,5 +1,6 @@
 <?php namespace AuraIsHere\LaravelMultiTenant;
 
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
 class LaravelMultiTenantServiceProvider extends ServiceProvider {
@@ -37,7 +38,7 @@ class LaravelMultiTenantServiceProvider extends ServiceProvider {
 		// Define alias 'TenantScope'
 		$this->app->booting(function ()
 		{
-			$loader = \Illuminate\Foundation\AliasLoader::getInstance();
+			$loader = AliasLoader::getInstance();
 			$loader->alias('TenantScope', 'AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade');
 		});
 

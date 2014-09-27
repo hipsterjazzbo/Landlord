@@ -17,7 +17,7 @@ class TenantObserver {
 		if (! $model->hasGlobalScope(TenantScopeFacade::getFacadeRoot())) return;
 
 		// Otherwise, scope the new model
-		foreach (TenantScope::getModelTenants() as $tenantColumn => $tenantId) {
+		foreach (TenantScopeFacade::getFacadeRoot()->getModelTenants() as $tenantColumn => $tenantId) {
 			$model->{$tenantColumn} = $tenantId;
 		}
 	}
