@@ -127,6 +127,18 @@ class TenantScope implements ScopeInterface {
 		}
 	}
 
+	public function creating(Model $model)
+	{
+		// If the model has had the global scope removed, bail
+		if (! $model->hasGlobalScope($this)) return;
+
+		// Otherwise, scope the new model
+		foreach ($this->getModelTenants($model) as $tenantColumn => $tenantId)
+		{
+			$model->{$tenantColumn} = $tenantId;
+		}
+	}
+
 	/**
 	 * Return which tenantColumn => tenantId are really in use for this model.
 	 *

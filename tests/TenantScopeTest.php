@@ -65,6 +65,22 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($query->wheres, [['type' => 'Null', 'column' => 'foo']]);
 	}
 
+	public function testCreating()
+	{
+		$scope = m::mock('AuraIsHere\LaravelMultiTenant\TenantScope');
+		$model = m::mock('Illuminate\Database\Eloquent\Model');
+
+		$scope->shouldDeferMissing();
+		$scope->shouldReceive('getModelTenants')->with($model)->andReturn(['column' => 1]);
+
+		$model->shouldDeferMissing();
+		$model->shouldReceive('hasGlobalScope')->andReturn(true);
+
+		$scope->creating($model);
+
+		$this->assertEquals(1, $model->column);
+	}
+
 	public function testGetModelTenants()
 	{
 		$scope = m::mock('AuraIsHere\LaravelMultiTenant\TenantScope');

@@ -1,9 +1,9 @@
 <?php namespace AuraIsHere\LaravelMultiTenant\Traits;
 
-use AuraIsHere\LaravelMultiTenant\TenantScope;
 use Config;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use AuraIsHere\LaravelMultiTenant\TenantObserver;
+use AuraIsHere\LaravelMultiTenant\TenantScope;
 use AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade;
 use AuraIsHere\LaravelMultiTenant\Exceptions\TenantModelNotFoundException;
 
@@ -13,7 +13,7 @@ use AuraIsHere\LaravelMultiTenant\Exceptions\TenantModelNotFoundException;
  * @package AuraIsHere\LaravelMultiTenant
  *
  * @method static void addGlobalScope(\Illuminate\Database\Eloquent\ScopeInterface $scope)
- * @method static void observe(object $class)
+ * @method static void creating(callable $callback)
  */
 trait TenantScopedModelTrait {
 
@@ -21,11 +21,16 @@ trait TenantScopedModelTrait {
 
 	public static function bootTenantScopedModelTrait()
 	{
+		$tenantScope = new TenantScope;
+
 		// Add the global scope that will handle all operations except create()
-		static::addGlobalScope(static::getTenantScope());
+		static::addGlobalScope($tenantScope);
 
 		// Add an observer that will automatically add the tenant id when create()-ing
-		static::observe(new TenantObserver);
+		static::creating(function (Model $model) use ($tenantScope)
+		{
+			$tenantScope->creating($model);
+		});
 	}
 
 	/**
@@ -37,7 +42,7 @@ trait TenantScopedModelTrait {
 	 */
 	public static function allTenants()
 	{
-		return with(new static)->newQueryWithoutScope(static::getTenantScope());
+		return with(new static)->newQueryWithoutScope(new TenantScope);
 	}
 
 	/**
@@ -84,15 +89,5 @@ trait TenantScopedModelTrait {
 		{
 			throw with(new TenantModelNotFoundException())->setModel(get_called_class());
 		}
-	}
-
-	/**
-	 * Returns tenant scope for this model.
-	 *
-	 * @return \Illuminate\Database\Eloquent\ScopeInterface
-	 */
-	protected static function getTenantScope()
-	{
-		return TenantScopeFacade::getFacadeRoot();
 	}
 } 
