@@ -87,7 +87,7 @@ trait TenantScopedModelTrait {
 
 		catch (ModelNotFoundException $e)
 		{
-			throw with(new TenantModelNotFoundException())->setModel(get_called_class());
+			throw with(new TenantModelNotFoundException)->setModel(get_called_class());
 		}
 	}
 } 
