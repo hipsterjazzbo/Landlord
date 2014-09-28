@@ -1,6 +1,7 @@
 <?php namespace AuraIsHere\LaravelMultiTenant;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ScopeInterface;
 use AuraIsHere\LaravelMultiTenant\Exceptions\TenantColumnUnknownException;
 
@@ -84,12 +85,12 @@ class TenantScope implements ScopeInterface {
 	{
 		if (! $this->enabled) return;
 
-		$this->model = $builder->getModel();
+		$model = $builder->getModel();
 
 		// Use whereRaw instead of where to avoid issues with bindings when removing
-		foreach ($this->getModelTenants() as $tenantColumn => $tenantId)
+		foreach ($this->getModelTenants($model) as $tenantColumn => $tenantId)
 		{
-			$builder->whereRaw($this->model->getTenantWhereClause($tenantColumn, $tenantId));
+			$builder->whereRaw($model->getTenantWhereClause($tenantColumn, $tenantId));
 		}
 	}
 
@@ -102,18 +103,17 @@ class TenantScope implements ScopeInterface {
 	 */
 	public function remove(Builder $builder)
 	{
-		$this->model = $builder->getModel();
-
+		$model = $builder->getModel();
 		$query = $builder->getQuery();
 
-		foreach ($this->getModelTenants() as $tenantColumn => $tenantId)
+		foreach ($this->getModelTenants($model) as $tenantColumn => $tenantId)
 		{
 			foreach ((array) $query->wheres as $key => $where)
 			{
 				// If the where clause is a tenant constraint, we will remove it from the query
 				// and reset the keys on the wheres. This allows this developer to include
 				// the tenant model in a relationship result set that is lazy loaded.
-				if ($this->isTenantConstraint($where, $tenantColumn, $tenantId))
+				if ($this->isTenantConstraint($model, $where, $tenantColumn, $tenantId))
 				{
 					unset($query->wheres[$key]);
 
@@ -128,13 +128,16 @@ class TenantScope implements ScopeInterface {
 	}
 
 	/**
-	 * Return which tenantColumn => tenantId are really in used for this model.
+	 * Return which tenantColumn => tenantId are really in use for this model.
 	 *
+	 * @param Model $model
+	 *
+	 * @throws TenantColumnUnknownException
 	 * @return array
 	 */
-	public function getModelTenants()
+	public function getModelTenants(Model $model)
 	{
-		$modelTenantColumns = $this->model->getTenantColumns();
+		$modelTenantColumns = $model->getTenantColumns();
 
 		if (! is_array($modelTenantColumns)) $modelTenantColumns = [$modelTenantColumns];
 
@@ -170,15 +173,16 @@ class TenantScope implements ScopeInterface {
 	/**
 	 * Determine if the given where clause is a tenant constraint.
 	 *
+	 * @param  \Illuminate\Database\Eloquent\Model $model
 	 * @param  array  $where
 	 * @param  string $tenantColumn
 	 * @param  mixed  $tenantId
 	 *
 	 * @return bool
 	 */
-	protected function isTenantConstraint(array $where, $tenantColumn, $tenantId)
+	public function isTenantConstraint($model, array $where, $tenantColumn, $tenantId)
 	{
-		return $where['type'] == 'raw' && $where['sql'] == $this->model->getTenantWhereClause($tenantColumn, $tenantId);
+		return $where['type'] == 'raw' && $where['sql'] == $model->getTenantWhereClause($tenantColumn, $tenantId);
 	}
 
 	public function disable()
