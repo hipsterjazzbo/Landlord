@@ -1,26 +1,36 @@
-<?php namespace AuraIsHere\LaravelMultiTenant;
+<?php namespace AuraIsHere\LaravelMultiTenant\Traits;
 
-use Illuminate\Support\Facades\Config;
+use Config;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use AuraIsHere\LaravelMultiTenant\Exceptions\ModelNotFoundForTenantException;
+use AuraIsHere\LaravelMultiTenant\TenantScope;
+use AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade;
+use AuraIsHere\LaravelMultiTenant\Exceptions\TenantModelNotFoundException;
 
 /**
- * Class ScopedByTenant
+ * Class TenantScopedModelTrait
  *
  * @package AuraIsHere\LaravelMultiTenant
  *
  * @method static void addGlobalScope(\Illuminate\Database\Eloquent\ScopeInterface $scope)
- * @method static void observe(object $class)
+ * @method static void creating(callable $callback)
  */
-trait ScopedByTenant {
+trait TenantScopedModelTrait {
 
-	public static function bootScopedByTenant()
+	public $tenantColumns = null;
+
+	public static function bootTenantScopedModelTrait()
 	{
+		$tenantScope = new TenantScope;
+
 		// Add the global scope that will handle all operations except create()
-		static::addGlobalScope(new TenantScope);
+		static::addGlobalScope($tenantScope);
 
 		// Add an observer that will automatically add the tenant id when create()-ing
-		static::observe(new TenantObserver);
+		static::creating(function (Model $model) use ($tenantScope)
+		{
+			$tenantScope->creating($model);
+		});
 	}
 
 	/**
@@ -40,33 +50,23 @@ trait ScopedByTenant {
 	 *
 	 * @return string
 	 */
-	public function getTenantColumn()
+	public function getTenantColumns()
 	{
-		return Config::get('laravel-multi-tenant::tenant_column');
-	}
-
-	/**
-	 * Get the fully qualified "tenant id" column.
-	 *
-	 * @return string
-	 */
-	public function getQualifiedTenantColumn()
-	{
-		return $this->getTable() . '.' . $this->getTenantColumn();
+		return is_null($this->tenantColumns) ? Config::get('laravel-multi-tenant::default_tenant_columns') : $this->tenantColumns;
 	}
 
 	/**
 	 * Prepare a raw where clause. Do it this way instead of using where()
 	 * to avoid issues with bindings when removing.
 	 *
+	 * @param $tenantColumn
+	 * @param $tenantId
+	 *
 	 * @return string
 	 */
-	public function getTenantWhereClause()
+	public function getTenantWhereClause($tenantColumn, $tenantId)
 	{
-		$tenantColumn = $this->getQualifiedTenantColumn();
-		$tenantId     = TenantScope::getTenantId();
-
-		return "{$tenantColumn} = '{$tenantId}'";
+		return "{$this->getTable()}.{$tenantColumn} = '{$tenantId}'";
 	}
 
 	/**
@@ -76,7 +76,7 @@ trait ScopedByTenant {
 	 * @param       $id
 	 * @param array $columns
 	 *
-	 * @throws ModelNotFoundForTenantException
+	 * @throws TenantModelNotFoundException
 	 */
 	public static function findOrFail($id, $columns = array('*'))
 	{
@@ -87,7 +87,7 @@ trait ScopedByTenant {
 
 		catch (ModelNotFoundException $e)
 		{
-			throw with(new ModelNotFoundForTenantException())->setModel(get_called_class());
+			throw with(new TenantModelNotFoundException)->setModel(get_called_class());
 		}
 	}
 } 

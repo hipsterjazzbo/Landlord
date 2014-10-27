@@ -31,41 +31,41 @@ After updating composer, add the ServiceProvider to the providers array in app/c
 'AuraIsHere\LaravelMultiTenant\LaravelMultiTenantServiceProvider',
 ```
 
-You should also publish the config file:
+You could also publish the config file:
 
 ```bash
 php artisan config:publish aura-is-here/laravel-multi-tenant
 ```
 
-and set up your `tenant_column` setting.
+and set up your `tenant_column` setting, if you have an app-wide default.
 
 ## Usage
 
-First off, you'll have to call `TenantScope::setTenantId($tenantId)` at some point. It could be as part of your login process, or in an oAuth setup method, or wherever.
+First off, you'll have to call `TenantScope::addTenant($tenantColumn, $tenantId)` at some point. It could be as part of your login process, or in an oAuth setup method, or wherever.
 
-You can also call `TenantScope::setTenantId($tenantId)` again at any point to change the tenant that is scoped.
-
-**Warning:** If you haven't yet set a tenant id, or if you unset the tenant id (`TenantScope::setTenantId(null)`), your requests **will not be scoped**. This can be useful, but it's a good thing to be aware of.
+You can also call `TenantScope::addTenant($tenantColumn, $tenantId)` again at any point to add another tenant to scope by.
 
 Once you've got that all worked out, simply `use` the trait in all your models that you'd like to scope by tenant:
 
 ```php
 <?php
 
-use AuraIsHere\LaravelMultiTenant\ScopedByTenant;
+use AuraIsHere\LaravelMultiTenant\Traits\TenantScopedModelTrait;
 
 class Model extends Eloquent {
 
-    use ScopedByTenant;
+    use TenantScopedModelTrait;
 }
 ```
 
 Henceforth, all operations against that model will be scoped automatically.
 
+You can also set a `$tenantColumns` property on the model to override the tenants applicable to that model.
+
 ```php
 $models = Model::all(); // Only the Models with the correct tenant id
 
-$model = Model::find(1); // Will fail if the Model with `id` 1 belongs to a differant tenant
+$model = Model::find(1); // Will fail if the Model with `id` 1 belongs to a different tenant
 
 $newModel = Model::create(); // Will have the tenant id added automatically
 ```

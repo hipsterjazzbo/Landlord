@@ -2,6 +2,6 @@
 
 use Exception;
 
-class TenantIdNotSetException extends Exception {
+class TenantBadFormatException extends Exception {
 
 } 

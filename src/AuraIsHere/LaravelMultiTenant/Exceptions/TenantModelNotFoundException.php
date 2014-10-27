@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class ModelNotFoundForTenantException extends ModelNotFoundException {
+class TenantModelNotFoundException extends ModelNotFoundException {
 
 	/**
 	 * @param string $model

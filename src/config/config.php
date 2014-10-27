@@ -8,7 +8,7 @@ return [
 	|--------------------------------------------------------------------------
 	|
 	| Every model that needs to be scoped by tenant (company, user, etc.)
-	| should have a column that references the `id` of tenant in the tenant
+	| should have one or more columns that reference the `id` of a tenant in the tenant
 	| table.
 	|
 	| For example, if you are scoping by company, you should have a
@@ -18,6 +18,6 @@ return [
 	|
 	*/
 
-	'tenant_column' => 'company_id',
+	'default_tenant_columns' => ['company_id'],
 
 ];

@@ -1,5 +1,6 @@
 <?php namespace AuraIsHere\LaravelMultiTenant;
 
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
 class LaravelMultiTenantServiceProvider extends ServiceProvider {
@@ -28,6 +29,19 @@ class LaravelMultiTenantServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
+		// Register our tenant scope instance
+		$this->app->bindshared('AuraIsHere\LaravelMultiTenant\TenantScope', function ($app)
+		{
+			return new TenantScope();
+		});
+
+		// Define alias 'TenantScope'
+		$this->app->booting(function ()
+		{
+			$loader = AliasLoader::getInstance();
+			$loader->alias('TenantScope', 'AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade');
+		});
+
 		// Register our config
 		$this->app['config']->package('aura-is-here/laravel-multi-tenant', __DIR__ . '/../../config');
 	}
@@ -41,5 +55,4 @@ class LaravelMultiTenantServiceProvider extends ServiceProvider {
 	{
 		return array();
 	}
-
 }
