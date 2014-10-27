@@ -1,17 +1,7 @@
 Laravel Multi Tenant
 ====================
 
-**HI THERE**
-
-This package is currently in a state of flux. If you'd like to take it for a spin, please have a go with the refactor branch.
-
-Thanks!
-
-***
-
 A general purpose multi-tenancy package for Laravel 4.2+. Accidentally derived from the work of [@tonydew](https://github.com/tonydew), and with help from [@rizqidjamaluddin](https://github.com/rizqidjamaluddin)
-
-**Note:** This is an experimental package. We're figuring out the best way to do this, together. Please have a play, but don't expect it to work perfectly right now. Pull requests welcome :)
 
 ## Installation
 
@@ -25,10 +15,16 @@ To get started, require this package in your composer.json and run composer upda
 "aura-is-here/laravel-multi-tenant": "dev-master"
 ```
 
-After updating composer, add the ServiceProvider to the providers array in app/config/app.php
+After updating composer, add the ServiceProvider to the providers array in `app/config/app.php`:
 
 ```php
 'AuraIsHere\LaravelMultiTenant\LaravelMultiTenantServiceProvider',
+```
+
+You'll probably want to set up the alias:
+
+```php
+'TenantScope' => 'AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade'
 ```
 
 You could also publish the config file:
@@ -41,7 +37,7 @@ and set up your `tenant_column` setting, if you have an app-wide default.
 
 ## Usage
 
-First off, you'll have to call `TenantScope::addTenant($tenantColumn, $tenantId)` at some point. It could be as part of your login process, or in an oAuth setup method, or wherever.
+First off, you'll have to call `TenantScope::addTenant($tenantColumn, $tenantId)` at some point. It could be as part of your login process, or in an OAuth setup method, or wherever.
 
 You can also call `TenantScope::addTenant($tenantColumn, $tenantId)` again at any point to add another tenant to scope by.
 
