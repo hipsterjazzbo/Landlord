@@ -172,7 +172,7 @@ class TenantScope implements ScopeInterface {
 	 */
 	public function getTenantId($tenantColumn)
 	{
-		if (! isset($this->tenants[$tenantColumn]))
+		if (! $this->hasTenant($tenantColumn))
 		{
 			throw new TenantColumnUnknownException(
 				get_class($this->model) . ': tenant column "' . $tenantColumn . '" NOT found in tenants scope "' . json_encode($this->tenants) . '"'
