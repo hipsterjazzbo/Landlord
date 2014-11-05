@@ -21,7 +21,7 @@ trait TenantScopedModelTrait {
 
 	public static function bootTenantScopedModelTrait()
 	{
-		$tenantScope = new TenantScope;
+		$tenantScope = \App::make("AuraIsHere\LaravelMultiTenant\TenantScope");
 
 		// Add the global scope that will handle all operations except create()
 		static::addGlobalScope($tenantScope);
