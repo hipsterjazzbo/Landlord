@@ -17,8 +17,6 @@ use AuraIsHere\LaravelMultiTenant\Exceptions\TenantModelNotFoundException;
  */
 trait TenantScopedModelTrait {
 
-	public $tenantColumns = null;
-
 	public static function bootTenantScopedModelTrait()
 	{
 		$tenantScope = new TenantScope;
@@ -52,7 +50,7 @@ trait TenantScopedModelTrait {
 	 */
 	public function getTenantColumns()
 	{
-		return is_null($this->tenantColumns) ? Config::get('laravel-multi-tenant::default_tenant_columns') : $this->tenantColumns;
+		return isset($this->tenantColumns) ? $this->tenantColumns : Config::get('laravel-multi-tenant::default_tenant_columns');
 	}
 
 	/**
