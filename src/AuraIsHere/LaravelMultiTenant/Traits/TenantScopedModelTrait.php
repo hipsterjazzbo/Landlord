@@ -1,6 +1,7 @@
 <?php namespace AuraIsHere\LaravelMultiTenant\Traits;
 
 use Config;
+use App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use AuraIsHere\LaravelMultiTenant\TenantScope;
@@ -21,7 +22,7 @@ trait TenantScopedModelTrait {
 
 	public static function bootTenantScopedModelTrait()
 	{
-		$tenantScope = \App::make("AuraIsHere\LaravelMultiTenant\TenantScope");
+		$tenantScope = App::make("AuraIsHere\LaravelMultiTenant\TenantScope");
 
 		// Add the global scope that will handle all operations except create()
 		static::addGlobalScope($tenantScope);
