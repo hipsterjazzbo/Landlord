@@ -2,6 +2,6 @@
 
 use Exception;
 
-class TenantBadFormatException extends Exception {
-
-} 
+class TenantBadFormatException extends Exception
+{
+}

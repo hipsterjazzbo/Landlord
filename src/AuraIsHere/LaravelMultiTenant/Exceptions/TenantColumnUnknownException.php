@@ -2,6 +2,6 @@
 
 use Exception;
 
-class TenantColumnUnknownException extends Exception {
-
-} 
+class TenantColumnUnknownException extends Exception
+{
+}

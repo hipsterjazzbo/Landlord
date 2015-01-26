@@ -2,6 +2,6 @@
 
 use Exception;
 
-class TenantNotSetException extends Exception {
-
-} 
+class TenantNotSetException extends Exception
+{
+}
