@@ -1,15 +1,15 @@
 <?php namespace AuraIsHere\LaravelMultiTenant;
 
-use AuraIsHere\LaravelMultiTenant\Exceptions\TenantColumnUnknownException;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ScopeInterface;
+use AuraIsHere\LaravelMultiTenant\Exceptions\TenantColumnUnknownException;
 
 class TenantScope implements ScopeInterface
 {
     private $enabled = true;
 
-    /** @var \Illuminate\Database\Eloquent\Model|\AuraIsHere\LaravelMultiTenant\Traits\TenantScopedModelTrait */
+    /** @var \Illuminate\Database\Eloquent\Model */
     private $model;
 
     /** @var array The tenant scopes currently set */
@@ -79,7 +79,7 @@ class TenantScope implements ScopeInterface
      */
     public function apply(Builder $builder)
     {
-        if (! $this->enabled) {
+		if (! $this->enabled) {
             return;
         }
 
@@ -145,16 +145,13 @@ class TenantScope implements ScopeInterface
      */
     public function getModelTenants(Model $model)
     {
-        $modelTenantColumns = $model->getTenantColumns();
-
-        if (! is_array($modelTenantColumns)) {
-            $modelTenantColumns = [$modelTenantColumns];
-        }
-
-        $modelTenants = [];
+        $modelTenantColumns = (array) $model->getTenantColumns();
+        $modelTenants       = [];
 
         foreach ($modelTenantColumns as $tenantColumn) {
-            $modelTenants[$tenantColumn] = $this->getTenantId($tenantColumn);
+            if ($this->hasTenant($tenantColumn)) {
+                $modelTenants[$tenantColumn] = $this->getTenantId($tenantColumn);
+            }
         }
 
         return $modelTenants;
