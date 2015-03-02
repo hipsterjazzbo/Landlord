@@ -77,7 +77,7 @@ trait TenantScopedModelTrait
     public static function findOrFail($id, $columns = ['*'])
     {
         try {
-            return call_user_func_array([static::query(), 'findOrFail'], [$id, $columns]);
+            return parent::query()->findOrFail($id, $columns);
         } catch (ModelNotFoundException $e) {
             throw with(new TenantModelNotFoundException())->setModel(get_called_class());
         }
