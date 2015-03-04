@@ -52,6 +52,11 @@ class TenantScopedModelStub extends ParentModel
 
 class ParentModel
 {
+    public static function query($id, $columns)
+    {
+        throw new ModelNotFoundException();
+    }
+    
     public static function findOrFail($id, $columns)
     {
         throw new ModelNotFoundException();
