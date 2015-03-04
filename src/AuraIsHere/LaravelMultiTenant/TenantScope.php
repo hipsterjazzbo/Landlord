@@ -74,16 +74,15 @@ class TenantScope implements ScopeInterface
      * Apply the scope to a given Eloquent query builder.
      *
      * @param Builder|\Illuminate\Database\Query\Builder $builder
+     * @param Model|\Illuminate\Database\Query\Model $model
      *
      * @return void
      */
-    public function apply(Builder $builder)
+    public function apply(Builder $builder, Model $model)
     {
 		if (! $this->enabled) {
             return;
         }
-
-        $model = $builder->getModel();
 
         // Use whereRaw instead of where to avoid issues with bindings when removing
         foreach ($this->getModelTenants($model) as $tenantColumn => $tenantId) {
@@ -95,12 +94,12 @@ class TenantScope implements ScopeInterface
      * Remove the scope from the given Eloquent query builder.
      *
      * @param Builder|\Illuminate\Database\Query\Builder $builder
+     * @param Model|\Illuminate\Database\Query\Model $model
      *
      * @return void
      */
-    public function remove(Builder $builder)
+    public function remove(Builder $builder, Model $model)
     {
-        $model = $builder->getModel();
         $query = $builder->getQuery();
 
         foreach ($this->getModelTenants($model) as $tenantColumn => $tenantId) {
