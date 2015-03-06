@@ -22,15 +22,18 @@ class LaravelMultiTenantServiceProvider extends ServiceProvider
         $this->package('aura-is-here/laravel-multi-tenant');
     }
 
-	/**
-	 * Register the service provider.
-	 *
-	 * @return void
-	 */
-	public function register()
-	{
-		// Register our tenant scope instance
-		$this->app->singleton('AuraIsHere\LaravelMultiTenant\TenantScope', function ($app) {
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        // Merge the package config values so they don't have to have a complete configuration
+        $this->mergeConfigFrom(__DIR__.'/../../config/config.php', 'tenant');
+
+	// Register our tenant scope instance
+	$this->app->singleton('AuraIsHere\LaravelMultiTenant\TenantScope', function ($app) {
             return new TenantScope();
         });
 
@@ -39,9 +42,6 @@ class LaravelMultiTenantServiceProvider extends ServiceProvider
             $loader = AliasLoader::getInstance();
             $loader->alias('TenantScope', 'AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade');
         });
-
-        // Register our config
-        $this->app['config']->package('aura-is-here/laravel-multi-tenant', __DIR__.'/../../config');
     }
 
     /**
