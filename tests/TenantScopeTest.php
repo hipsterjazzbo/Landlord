@@ -138,6 +138,6 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
         $model->shouldReceive('getTenantWhereClause')->with('column', 1)->andReturn("table.column = '1'")->never();
 
         $scope->disable();
-        $scope->apply($builder);
+        $scope->apply($builder, $model);
     }
 }
