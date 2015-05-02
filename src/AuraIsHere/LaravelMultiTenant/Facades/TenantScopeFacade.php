@@ -1,4 +1,6 @@
-<?php namespace AuraIsHere\LaravelMultiTenant\Facades;
+<?php
+
+namespace AuraIsHere\LaravelMultiTenant\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

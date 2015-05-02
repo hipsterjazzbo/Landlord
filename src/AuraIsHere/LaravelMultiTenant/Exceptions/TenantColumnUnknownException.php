@@ -1,4 +1,6 @@
-<?php namespace AuraIsHere\LaravelMultiTenant\Exceptions;
+<?php
+
+namespace AuraIsHere\LaravelMultiTenant\Exceptions;
 
 use Exception;
 

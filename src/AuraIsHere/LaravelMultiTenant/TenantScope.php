@@ -1,9 +1,11 @@
-<?php namespace AuraIsHere\LaravelMultiTenant;
+<?php
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\ScopeInterface;
+namespace AuraIsHere\LaravelMultiTenant;
+
 use AuraIsHere\LaravelMultiTenant\Exceptions\TenantColumnUnknownException;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ScopeInterface;
 
 class TenantScope implements ScopeInterface
 {
@@ -74,13 +76,13 @@ class TenantScope implements ScopeInterface
      * Apply the scope to a given Eloquent query builder.
      *
      * @param Builder|\Illuminate\Database\Query\Builder $builder
-     * @param Model|\Illuminate\Database\Query\Model $model
+     * @param Model|\Illuminate\Database\Query\Model     $model
      *
      * @return void
      */
     public function apply(Builder $builder, Model $model)
     {
-		if (! $this->enabled) {
+        if (! $this->enabled) {
             return;
         }
 
@@ -94,7 +96,7 @@ class TenantScope implements ScopeInterface
      * Remove the scope from the given Eloquent query builder.
      *
      * @param Builder|\Illuminate\Database\Query\Builder $builder
-     * @param Model|\Illuminate\Database\Query\Model $model
+     * @param Model|\Illuminate\Database\Query\Model     $model
      *
      * @return void
      */
@@ -103,7 +105,7 @@ class TenantScope implements ScopeInterface
         $query = $builder->getQuery();
 
         foreach ($this->getModelTenants($model) as $tenantColumn => $tenantId) {
-            foreach ((array) $query->wheres as $key => $where) {
+            foreach ((array)$query->wheres as $key => $where) {
                 // If the where clause is a tenant constraint, we will remove it from the query
                 // and reset the keys on the wheres. This allows this developer to include
                 // the tenant model in a relationship result set that is lazy loaded.
@@ -144,7 +146,7 @@ class TenantScope implements ScopeInterface
      */
     public function getModelTenants(Model $model)
     {
-        $modelTenantColumns = (array) $model->getTenantColumns();
+        $modelTenantColumns = (array)$model->getTenantColumns();
         $modelTenants       = [];
 
         foreach ($modelTenantColumns as $tenantColumn) {
@@ -167,7 +169,7 @@ class TenantScope implements ScopeInterface
     {
         if (! $this->hasTenant($tenantColumn)) {
             throw new TenantColumnUnknownException(
-                get_class($this->model).': tenant column "'.$tenantColumn.'" NOT found in tenants scope "'.json_encode($this->tenants).'"'
+                get_class($this->model) . ': tenant column "' . $tenantColumn . '" NOT found in tenants scope "' . json_encode($this->tenants) . '"'
             );
         }
 
