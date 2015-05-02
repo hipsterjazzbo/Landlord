@@ -41,7 +41,7 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
 
         $model->shouldReceive('getTenantWhereClause')->once()->with('column', 1)->andReturn("table.column = '1'");
 
-        $scope->apply($builder);
+        $scope->apply($builder, $model);
     }
 
     public function testRemove()
@@ -60,7 +60,7 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
 
         $query->wheres = [['type' => 'Null', 'column' => 'foo'], ['type' => 'raw', 'sql' => "table.column = '1'"]];
 
-        $scope->remove($builder);
+        $scope->remove($builder, $model);
 
         $this->assertEquals($query->wheres, [['type' => 'Null', 'column' => 'foo']]);
     }
@@ -88,7 +88,8 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
 
         $scope->shouldDeferMissing();
         $scope->shouldReceive('getTenantId')->once()->andReturn(1);
-
+        $scope->shouldReceive('hasTenant')->once()->andReturn(true);
+        
         $model->shouldReceive('getTenantColumns')->once()->andReturn(['column']);
 
         $modelTenants = $scope->getModelTenants($model);
@@ -137,6 +138,6 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
         $model->shouldReceive('getTenantWhereClause')->with('column', 1)->andReturn("table.column = '1'")->never();
 
         $scope->disable();
-        $scope->apply($builder);
+        $scope->apply($builder, $model);
     }
 }

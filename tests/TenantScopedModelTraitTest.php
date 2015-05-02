@@ -56,4 +56,9 @@ class ParentModel
     {
         throw new ModelNotFoundException();
     }
+
+    public static function query()
+    {
+        throw new ModelNotFoundException();
+    }
 }
