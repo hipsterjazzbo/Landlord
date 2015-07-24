@@ -39,9 +39,13 @@ and set up your `tenant_column` setting, if you have an app-wide default.
 
 ## Usage
 
-First off, you'll have to call `TenantScope::addTenant($tenantColumn, $tenantId)` at some point. It could be as part of your login process, or in an OAuth setup method, or wherever.
+First off, you'll have to call `TenantScope::addTenant($tenantColumn, $tenantId)`. It doesn't matter where, **as long as it happens on every request**. This is important; if you only set the tenant in your login method for example, that won't run for subsequent requests and queries will no longer be scoped.
 
-You can also call `TenantScope::addTenant($tenantColumn, $tenantId)` again at any point to add another tenant to scope by.
+Some exmaples of good places to call `TenantScope::addTenant($tenantColumn, $tenantId)` might be:
+
+- In a global Middleware
+- In an oauth system, wherever you're checking the token on each request
+- In the constructor of a base controller
 
 Once you've got that all worked out, simply `use` the trait in all your models that you'd like to scope by tenant:
 
