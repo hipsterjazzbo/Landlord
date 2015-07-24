@@ -7,10 +7,6 @@ A general purpose multi-tenancy package for Laravel 4.2+. Accidentally derived f
 
 ## Installation
 
-First off, this package assumes that you have a column on all of your tenant-scoped tables that references which tenant each row belongs to.
-
-For example, you might have a `companies` table, and all your other tables might have a `company_id` column (with a foreign key, right?).
-
 To get started, require this package in your composer.json and run composer update:
 
 ```json
@@ -39,9 +35,13 @@ and set up your `tenant_column` setting, if you have an app-wide default.
 
 ## Usage
 
-First off, you'll have to call `TenantScope::addTenant($tenantColumn, $tenantId)`. It doesn't matter where, **as long as it happens on every request**. This is important; if you only set the tenant in your login method for example, that won't run for subsequent requests and queries will no longer be scoped.
+First off, this package assumes that you have a column on all of your tenant-scoped tables that references which tenant each row belongs to.
 
-Some exmaples of good places to call `TenantScope::addTenant($tenantColumn, $tenantId)` might be:
+For example, you might have a `companies` table, and all your other tables might have a `company_id` column (with a foreign key, right?).
+
+Next, you'll have to call `TenantScope::addTenant($tenantColumn, $tenantId)`. It doesn't matter where, **as long as it happens on every request**. This is important; if you only set the tenant in your login method for example, that won't run for subsequent requests and queries will no longer be scoped.
+
+Some examples of good places to call `TenantScope::addTenant($tenantColumn, $tenantId)` might be:
 
 - In a global Middleware
 - In an oauth system, wherever you're checking the token on each request
