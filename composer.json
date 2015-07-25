@@ -17,9 +17,8 @@
         "laravel/framework": "4.2.*|5.0.*|5.1.*"
     },
     "autoload": {
-        "psr-0": {
-            "AuraIsHere\\LaravelMultiTenant\\": "src/"
+        "psr-4": {
+            "AuraIsHere\\LaravelMultiTenant\\": "src/AuraIsHere/LaravelMultiTenant/"
         }
-    },
-    "minimum-stability": "stable"
+    }
 }
