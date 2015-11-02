@@ -3,7 +3,7 @@ Laravel Multi Tenant
 
 ![](https://travis-ci.org/AuraEQ/laravel-multi-tenant.svg?branch=master)
 
-A general purpose multi-tenancy package for Laravel 4.2+. Accidentally derived from the work of [@tonydew](https://github.com/tonydew), and with help from [@rizqidjamaluddin](https://github.com/rizqidjamaluddin)
+A general purpose multi-tenancy package for Laravel 5. Accidentally derived from the work of [@tonydew](https://github.com/tonydew), and with help from [@rizqidjamaluddin](https://github.com/rizqidjamaluddin)
 
 ## Installation
 
@@ -16,19 +16,19 @@ To get started, require this package in your composer.json and run composer upda
 After updating composer, add the ServiceProvider to the providers array in `app/config/app.php`:
 
 ```php
-'AuraIsHere\LaravelMultiTenant\LaravelMultiTenantServiceProvider',
+AuraIsHere\LaravelMultiTenant\LaravelMultiTenantServiceProvider::class,
 ```
 
 You'll probably want to set up the alias:
 
 ```php
-'TenantScope' => 'AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade'
+'TenantScope' => AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade::class
 ```
 
 You could also publish the config file:
 
 ```bash
-php artisan config:publish aura-is-here/laravel-multi-tenant
+php artisan vendor:publish --provider="AuraIsHere\LaravelMultiTenant\LaravelMultiTenantServiceProvider"
 ```
 
 and set up your `tenant_column` setting, if you have an app-wide default.
