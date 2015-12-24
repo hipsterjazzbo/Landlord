@@ -14,7 +14,7 @@
     "require-dev": {
         "mockery/mockery": "~0.9",
         "phpunit/phpunit": "~4.0",
-        "laravel/framework": "4.2.*|5.0.*|5.1.*"
+        "laravel/framework": "4.2.*|5.0.*|5.1.*|5.2.*"
     },
     "autoload": {
         "psr-4": {
