@@ -4,6 +4,6 @@ namespace AuraIsHere\LaravelMultiTenant\Exceptions;
 
 use Exception;
 
-class TenantBadFormatException extends Exception
+class TenantBadFormatException extends Exception implements TenantExceptionInterface
 {
 }

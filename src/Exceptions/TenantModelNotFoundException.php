@@ -4,7 +4,7 @@ namespace AuraIsHere\LaravelMultiTenant\Exceptions;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class TenantModelNotFoundException extends ModelNotFoundException
+class TenantModelNotFoundException extends ModelNotFoundException implements TenantExceptionInterface
 {
     /**
      * @param string $model
