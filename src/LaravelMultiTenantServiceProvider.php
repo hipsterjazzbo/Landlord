@@ -16,8 +16,9 @@ class LaravelMultiTenantServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->setupConfig();
-        $this->setupTenantScope();
+        $this->publishes([
+            realpath(__DIR__ . '/../config/laravel-multi-tenant.php') => config_path('laravel-multi-tenant.php')
+        ]);
     }
 
     /**
@@ -27,35 +28,15 @@ class LaravelMultiTenantServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->singleton(TenantScope::class, function () {
+            return new TenantScope();
+        });
+
         // Define alias 'TenantScope'
         $this->app->booting(function () {
             $loader = AliasLoader::getInstance();
 
             $loader->alias('TenantScope', TenantScopeFacade::class);
-        });
-    }
-
-    /**
-     * Setup the config.
-     *
-     * @return void
-     */
-    protected function setupConfig()
-    {
-        $this->publishes([
-            realpath(__DIR__ . '/../config/laravel-multi-tenant.php') => config_path('laravel-multi-tenant.php')
-        ]);
-    }
-
-    /**
-     * Setup the tenant scope instance.
-     *
-     * @return void
-     */
-    protected function setupTenantScope()
-    {
-        $this->app->singleton(TenantScope::class, function () {
-            return new TenantScope();
         });
     }
 }
