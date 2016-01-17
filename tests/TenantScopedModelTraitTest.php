@@ -21,16 +21,6 @@ class TenantScopedModelTraitTest extends PHPUnit_Framework_TestCase
         // This one either
     }
 
-    public function testGetTenantWhereClause()
-    {
-        $model = m::mock('TenantScopedModelStub');
-        $model->shouldDeferMissing();
-
-        $whereClause = $model->getTenantWhereClause('column', 1);
-
-        $this->assertEquals("table.column = '1'", $whereClause);
-    }
-
     /**
      * @expectedException \AuraIsHere\LaravelMultiTenant\Exceptions\TenantModelNotFoundException
      */

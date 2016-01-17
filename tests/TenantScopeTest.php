@@ -37,32 +37,11 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
         $scope->shouldReceive('getModelTenants')->once()->with($model)->andReturn(['column' => 1]);
 
         $builder->shouldReceive('getModel')->andReturn($model);
-        $builder->shouldReceive('whereRaw')->once()->with("table.column = '1'");
+        $builder->shouldReceive('where')->once()->with('table.column', '=', '1');
 
-        $model->shouldReceive('getTenantWhereClause')->once()->with('column', 1)->andReturn("table.column = '1'");
+        $model->shouldReceive('getTable')->andReturn('table');
 
         $scope->apply($builder, $model);
-    }
-
-    public function testRemove()
-    {
-        $scope   = m::mock('AuraIsHere\LaravelMultiTenant\TenantScope');
-        $builder = m::mock('Illuminate\Database\Eloquent\Builder');
-        $model   = m::mock('Illuminate\Database\Eloquent\Model');
-
-        $scope->shouldDeferMissing();
-        $scope->shouldReceive('getModelTenants')->once()->with($model)->andReturn(['column' => 1]);
-
-        $builder->shouldReceive('getModel')->andReturn($model);
-        $builder->shouldReceive('getQuery')->andReturn($query = m::mock('StdClass'));
-
-        $model->shouldReceive('getTenantWhereClause')->once()->with('column', 1)->andReturn("table.column = '1'");
-
-        $query->wheres = [['type' => 'Null', 'column' => 'foo'], ['type' => 'raw', 'sql' => "table.column = '1'"]];
-
-        $scope->remove($builder, $model);
-
-        $this->assertEquals($query->wheres, [['type' => 'Null', 'column' => 'foo']]);
     }
 
     public function testCreating()
@@ -105,22 +84,6 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
         $scope = new TenantScope();
 
         $scope->getTenantId('column');
-    }
-
-    public function testIsTenantConstraint()
-    {
-        $scope        = new TenantScope();
-        $model        = m::mock('Illuminate\Database\Eloquent\Model');
-        $tenantColumn = 'column';
-        $tenantId     = 1;
-
-        $model->shouldReceive('getTenantWhereClause')->with($tenantColumn, $tenantId)->andReturn("table.column = '1'");
-
-        $where = ['type' => 'raw', 'sql' => "table.column = '1'"];
-        $this->assertTrue($scope->isTenantConstraint($model, $where, $tenantColumn, $tenantId));
-
-        $where = ['type' => 'raw', 'sql' => "table.column = '2'"];
-        $this->assertFalse($scope->isTenantConstraint($model, $where, $tenantColumn, $tenantId));
     }
 
     public function testDisable()
