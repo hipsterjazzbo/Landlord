@@ -42,11 +42,9 @@ class LaravelMultiTenantServiceProvider extends ServiceProvider
      */
     protected function setupConfig()
     {
-        $source = realpath(__DIR__ . '/../config/laravel-multi-tenant.php');
-
-        $this->publishes([$source => config_path('laravel-multi-tenant.php')]);
-
-        $this->mergeConfigFrom($source, 'laravel-multi-tenant');
+        $this->publishes([
+            realpath(__DIR__ . '/../config/laravel-multi-tenant.php') => config_path('laravel-multi-tenant.php')
+        ]);
     }
 
     /**
