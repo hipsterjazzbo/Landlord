@@ -2,6 +2,7 @@
 
 namespace AuraIsHere\LaravelMultiTenant;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,9 +22,36 @@ class LaravelMultiTenantServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->publishes([
-            __DIR__ . '/../../config/config.php' => config_path('tenant.php'),
-        ]);
+        $this->setupConfig($this->app);
+        $this->setupTenantScope($this->app);
+    }
+
+    /**
+     * Setup the config.
+     *
+     * @param \Illuminate\Contracts\Foundation\Application $app
+     *
+     * @return void
+     */
+    protected function setupConfig(Application $app)
+    {
+        $source = realpath(__DIR__.'/../config/laravel-multi-tenant.php');
+        $this->publishes([$source => config_path('laravel-multi-tenant.php')]);
+        $this->mergeConfigFrom($source, 'laravel-multi-tenant');
+    }
+
+    /**
+     * Setup the tenant scope instance.
+     *
+     * @param \Illuminate\Contracts\Foundation\Application $app
+     *
+     * @return void
+     */
+    protected function setupTenantScope(Application $app)
+    {
+        $app->singleton('AuraIsHere\LaravelMultiTenant\TenantScope', function ($app) {
+            return new TenantScope();
+        });
     }
 
     /**
@@ -33,14 +61,6 @@ class LaravelMultiTenantServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // Merge the package config values so they don't have to have a complete configuration
-        $this->mergeConfigFrom(__DIR__ . '/../../config/config.php', 'tenant');
-
-        // Register our tenant scope instance
-        $this->app->singleton('AuraIsHere\LaravelMultiTenant\TenantScope', function ($app) {
-            return new TenantScope();
-        });
-
         // Define alias 'TenantScope'
         $this->app->booting(function () {
             $loader = AliasLoader::getInstance();
