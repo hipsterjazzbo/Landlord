@@ -6,4 +6,5 @@ use Exception;
 
 class TenantBadFormatException extends Exception implements TenantExceptionInterface
 {
+    //
 }

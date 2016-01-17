@@ -5,16 +5,23 @@ namespace AuraIsHere\LaravelMultiTenant;
 use AuraIsHere\LaravelMultiTenant\Exceptions\TenantColumnUnknownException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ScopeInterface;
+use Illuminate\Database\Eloquent\Scope;
 
-class TenantScope implements ScopeInterface
+class TenantScope implements Scope
 {
+    /**
+     * @var bool
+     */
     private $enabled = true;
 
-    /** @var \Illuminate\Database\Eloquent\Model */
+    /**
+     * @var \Illuminate\Database\Eloquent\Model
+     */
     private $model;
 
-    /** @var array The tenant scopes currently set */
+    /**
+     * @var array The tenant scopes currently set
+     */
     protected $tenants = [];
 
     /**
@@ -32,8 +39,6 @@ class TenantScope implements ScopeInterface
      *
      * @param string $tenantColumn
      * @param mixed  $tenantId
-     *
-     * @return void
      */
     public function addTenant($tenantColumn, $tenantId)
     {
@@ -75,10 +80,8 @@ class TenantScope implements ScopeInterface
     /**
      * Apply the scope to a given Eloquent query builder.
      *
-     * @param Builder|\Illuminate\Database\Query\Builder $builder
-     * @param Model|\Illuminate\Database\Query\Model     $model
-     *
-     * @return void
+     * @param Builder                             $builder
+     * @param Model|Traits\TenantScopedModelTrait $model
      */
     public function apply(Builder $builder, Model $model)
     {
@@ -86,42 +89,14 @@ class TenantScope implements ScopeInterface
             return;
         }
 
-        // Use whereRaw instead of where to avoid issues with bindings when removing
         foreach ($this->getModelTenants($model) as $tenantColumn => $tenantId) {
-            $builder->whereRaw($model->getTenantWhereClause($tenantColumn, $tenantId));
+            $builder->where($model->getTable() . '.' . $tenantColumn, '=', $tenantId);
         }
     }
 
     /**
-     * Remove the scope from the given Eloquent query builder.
-     *
-     * @param Builder|\Illuminate\Database\Query\Builder $builder
-     * @param Model|\Illuminate\Database\Query\Model     $model
-     *
-     * @return void
+     * @param Model|Traits\TenantScopedModelTrait $model
      */
-    public function remove(Builder $builder, Model $model)
-    {
-        $query = $builder->getQuery();
-
-        foreach ($this->getModelTenants($model) as $tenantColumn => $tenantId) {
-            foreach ((array)$query->wheres as $key => $where) {
-                // If the where clause is a tenant constraint, we will remove it from the query
-                // and reset the keys on the wheres. This allows this developer to include
-                // the tenant model in a relationship result set that is lazy loaded.
-                if ($this->isTenantConstraint($model, $where, $tenantColumn, $tenantId)) {
-                    unset($query->wheres[$key]);
-
-                    $query->wheres = array_values($query->wheres);
-
-                    // Just bail after this first one in case the user has manually specified
-                    // the same where clause for some weird reason or by some nutso coincidence.
-                    break;
-                }
-            }
-        }
-    }
-
     public function creating(Model $model)
     {
         // If the model has had the global scope removed, bail
@@ -138,7 +113,7 @@ class TenantScope implements ScopeInterface
     /**
      * Return which tenantColumn => tenantId are really in use for this model.
      *
-     * @param Model $model
+     * @param Model|Traits\TenantScopedModelTrait $model
      *
      * @throws TenantColumnUnknownException
      *
@@ -174,21 +149,6 @@ class TenantScope implements ScopeInterface
         }
 
         return $this->tenants[$tenantColumn];
-    }
-
-    /**
-     * Determine if the given where clause is a tenant constraint.
-     *
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @param array                               $where
-     * @param string                              $tenantColumn
-     * @param mixed                               $tenantId
-     *
-     * @return bool
-     */
-    public function isTenantConstraint($model, array $where, $tenantColumn, $tenantId)
-    {
-        return $where['type'] == 'raw' && $where['sql'] == $model->getTenantWhereClause($tenantColumn, $tenantId);
     }
 
     public function disable()

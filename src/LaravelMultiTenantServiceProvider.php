@@ -2,6 +2,7 @@
 
 namespace AuraIsHere\LaravelMultiTenant;
 
+use AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
@@ -9,49 +10,14 @@ use Illuminate\Support\ServiceProvider;
 class LaravelMultiTenantServiceProvider extends ServiceProvider
 {
     /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = false;
-
-    /**
      * Bootstrap the application events.
      *
      * @return void
      */
     public function boot()
     {
-        $this->setupConfig($this->app);
-        $this->setupTenantScope($this->app);
-    }
-
-    /**
-     * Setup the config.
-     *
-     * @param \Illuminate\Contracts\Foundation\Application $app
-     *
-     * @return void
-     */
-    protected function setupConfig(Application $app)
-    {
-        $source = realpath(__DIR__.'/../config/laravel-multi-tenant.php');
-        $this->publishes([$source => config_path('laravel-multi-tenant.php')]);
-        $this->mergeConfigFrom($source, 'laravel-multi-tenant');
-    }
-
-    /**
-     * Setup the tenant scope instance.
-     *
-     * @param \Illuminate\Contracts\Foundation\Application $app
-     *
-     * @return void
-     */
-    protected function setupTenantScope(Application $app)
-    {
-        $app->singleton('AuraIsHere\LaravelMultiTenant\TenantScope', function ($app) {
-            return new TenantScope();
-        });
+        $this->setupConfig();
+        $this->setupTenantScope();
     }
 
     /**
@@ -64,17 +30,34 @@ class LaravelMultiTenantServiceProvider extends ServiceProvider
         // Define alias 'TenantScope'
         $this->app->booting(function () {
             $loader = AliasLoader::getInstance();
-            $loader->alias('TenantScope', 'AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade');
+
+            $loader->alias('TenantScope', TenantScopeFacade::class);
         });
     }
 
     /**
-     * Get the services provided by the provider.
+     * Setup the config.
      *
-     * @return array
+     * @return void
      */
-    public function provides()
+    protected function setupConfig()
     {
-        return [];
+        $source = realpath(__DIR__ . '/../config/laravel-multi-tenant.php');
+
+        $this->publishes([$source => config_path('laravel-multi-tenant.php')]);
+
+        $this->mergeConfigFrom($source, 'laravel-multi-tenant');
+    }
+
+    /**
+     * Setup the tenant scope instance.
+     *
+     * @return void
+     */
+    protected function setupTenantScope()
+    {
+        $this->app->singleton(TenantScope::class, function () {
+            return new TenantScope();
+        });
     }
 }

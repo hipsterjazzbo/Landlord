@@ -10,15 +10,14 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 /**
  * Class TenantScopedModelTrait.
  *
- *
- * @method static void addGlobalScope(\Illuminate\Database\Eloquent\ScopeInterface $scope)
+ * @method static void addGlobalScope(\Illuminate\Database\Eloquent\Scope $scope)
  * @method static void creating(callable $callback)
  */
 trait TenantScopedModelTrait
 {
     public static function bootTenantScopedModelTrait()
     {
-        $tenantScope = app('AuraIsHere\LaravelMultiTenant\TenantScope');
+        $tenantScope = app(TenantScope::class);
 
         // Add the global scope that will handle all operations except create()
         static::addGlobalScope($tenantScope);
@@ -38,7 +37,7 @@ trait TenantScopedModelTrait
      */
     public static function allTenants()
     {
-        return with(new static())->newQueryWithoutScope(new TenantScope());
+        return with(new static())->newQueryWithoutScope(TenantScope::class);
     }
 
     /**
@@ -49,20 +48,6 @@ trait TenantScopedModelTrait
     public function getTenantColumns()
     {
         return isset($this->tenantColumns) ? $this->tenantColumns : config('tenant.default_tenant_columns');
-    }
-
-    /**
-     * Prepare a raw where clause. Do it this way instead of using where()
-     * to avoid issues with bindings when removing.
-     *
-     * @param $tenantColumn
-     * @param $tenantId
-     *
-     * @return string
-     */
-    public function getTenantWhereClause($tenantColumn, $tenantId)
-    {
-        return "{$this->getTable()}.{$tenantColumn} = '{$tenantId}'";
     }
 
     /**
