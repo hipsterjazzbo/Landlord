@@ -1,10 +1,10 @@
 {
     "name": "hipsterjazzbo/landlord",
-    "description": "Single-database multi-tenancy made simple.",
+    "description": "A simple, single database multi-tenancy solution for Laravel 5.2+",
     "authors": [
         {
             "name": "Caleb Fidecaro",
-            "email": "caleb@auraishere.com"
+            "email": "calebfidecaro@gmail.com"
         }
     ],
     "require": {
@@ -18,7 +18,7 @@
     },
     "autoload": {
         "psr-4": {
-            "AuraIsHere\\Landlord\\": "src/"
+            "HipsterJazzbo\\Landlord\\": "src/"
         }
     }
 }

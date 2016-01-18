@@ -1,6 +1,6 @@
 <?php
 
-namespace AuraIsHere\Landlord\Exceptions;
+namespace HipsterJazzbo\Landlord\Exceptions;
 
 interface TenantExceptionInterface
 {

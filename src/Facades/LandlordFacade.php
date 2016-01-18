@@ -1,6 +1,6 @@
 <?php
 
-namespace AuraIsHere\Landlord\Facades;
+namespace HipsterJazzbo\Landlord\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

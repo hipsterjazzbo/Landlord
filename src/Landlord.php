@@ -1,6 +1,6 @@
 <?php
 
-namespace AuraIsHere\Landlord;
+namespace HipsterJazzbo\Landlord;
 
 use AuraIsHere\Landlord\Exceptions\TenantColumnUnknownException;
 use Illuminate\Database\Eloquent\Builder;
