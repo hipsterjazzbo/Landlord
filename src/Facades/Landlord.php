@@ -13,6 +13,6 @@ class Landlord extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'HipsterJazzbo\LaravelMultiTenant\TenantScope';
+        return 'HipsterJazzbo\Landlord\Landlord';
     }
 }
