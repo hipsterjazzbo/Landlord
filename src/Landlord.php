@@ -2,7 +2,7 @@
 
 namespace HipsterJazzbo\Landlord;
 
-use AuraIsHere\Landlord\Exceptions\TenantColumnUnknownException;
+use HipsterJazzbo\Landlord\Exceptions\TenantColumnUnknownException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
@@ -81,7 +81,7 @@ class Landlord implements Scope
      * Apply the scope to a given Eloquent query builder.
      *
      * @param Builder                                    $builder
-     * @param Model|\AuraIsHere\Landlord\BelongsToTenant $model
+     * @param Model|\HipsterJazzbo\Landlord\BelongsToTenant $model
      */
     public function apply(Builder $builder, Model $model)
     {
@@ -95,7 +95,7 @@ class Landlord implements Scope
     }
 
     /**
-     * @param Model|\AuraIsHere\Landlord\BelongsToTenant $model
+     * @param Model|\HipsterJazzbo\Landlord\BelongsToTenant $model
      */
     public function creating(Model $model)
     {
@@ -113,7 +113,7 @@ class Landlord implements Scope
     /**
      * Return which tenantColumn => tenantId are really in use for this model.
      *
-     * @param Model|\AuraIsHere\Landlord\BelongsToTenant $model
+     * @param Model|\HipsterJazzbo\Landlord\BelongsToTenant $model
      *
      * @throws TenantColumnUnknownException
      *

@@ -21,7 +21,7 @@ class TenantScopedModelTraitTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \AuraIsHere\Landlord\Exceptions\TenantModelNotFoundException
+     * @expectedException \HipsterJazzbo\Landlord\Exceptions\TenantModelNotFoundException
      */
     public function testFindOrFailThrowsTenantException()
     {
@@ -31,7 +31,7 @@ class TenantScopedModelTraitTest extends PHPUnit_Framework_TestCase
 
 class TenantScopedModelStub extends ParentModel
 {
-    use \AuraIsHere\Landlord\BelongsToTenant;
+    use \HipsterJazzbo\Landlord\BelongsToTenant;
 
     public function getTable()
     {

@@ -2,7 +2,7 @@
 
 namespace HipsterJazzbo\Landlord;
 
-use AuraIsHere\Landlord\Facades\LandlordFacade;
+use HipsterJazzbo\Landlord\Facades\LandlordFacade;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;

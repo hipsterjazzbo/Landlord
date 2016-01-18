@@ -1,6 +1,6 @@
 <?php
 
-use AuraIsHere\Landlord\Landlord;
+use HipsterJazzbo\Landlord\Landlord;
 use Mockery as m;
 
 class TenantScopeTest extends PHPUnit_Framework_TestCase
@@ -29,7 +29,7 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
 
     public function testApply()
     {
-        $scope   = m::mock(\AuraIsHere\Landlord\Landlord::class);
+        $scope   = m::mock(\HipsterJazzbo\Landlord\Landlord::class);
         $builder = m::mock(\Illuminate\Database\Eloquent\Builder::class);
         $model   = m::mock(\Illuminate\Database\Eloquent\Model::class);
 
@@ -46,7 +46,7 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
 
     public function testCreating()
     {
-        $scope = m::mock(\AuraIsHere\Landlord\Landlord::class);
+        $scope = m::mock(\HipsterJazzbo\Landlord\Landlord::class);
         $model = m::mock(\Illuminate\Database\Eloquent\Model::class);
 
         $scope->shouldDeferMissing();
@@ -62,7 +62,7 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
 
     public function testGetModelTenants()
     {
-        $scope = m::mock(\AuraIsHere\Landlord\Landlord::class);
+        $scope = m::mock(\HipsterJazzbo\Landlord\Landlord::class);
         $model = m::mock(\Illuminate\Database\Eloquent\Model::class);
 
         $scope->shouldDeferMissing();
@@ -77,7 +77,7 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \AuraIsHere\Landlord\Exceptions\TenantColumnUnknownException
+     * @expectedException \HipsterJazzbo\Landlord\Exceptions\TenantColumnUnknownException
      */
     public function testGetTenantIdThrowsException()
     {
@@ -88,7 +88,7 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
 
     public function testDisable()
     {
-        $scope   = m::mock(\AuraIsHere\Landlord\Landlord::class);
+        $scope   = m::mock(\HipsterJazzbo\Landlord\Landlord::class);
         $builder = m::mock(\Illuminate\Database\Eloquent\Builder::class);
         $model   = m::mock(\Illuminate\Database\Eloquent\Model::class);
 

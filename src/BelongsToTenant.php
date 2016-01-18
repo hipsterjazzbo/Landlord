@@ -2,7 +2,7 @@
 
 namespace HipsterJazzbo\Landlord;
 
-use AuraIsHere\Landlord\Exceptions\TenantModelNotFoundException;
+use HipsterJazzbo\Landlord\Exceptions\TenantModelNotFoundException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Scope;
