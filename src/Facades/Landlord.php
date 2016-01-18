@@ -4,7 +4,7 @@ namespace HipsterJazzbo\Landlord\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class LandlordFacade extends Facade
+class Landlord extends Facade
 {
     /**
      * Get the registered name of the component.
