@@ -1,45 +1,41 @@
 Laravel Multi Tenant
 ====================
 
-![](https://travis-ci.org/AuraEQ/laravel-multi-tenant.svg?branch=master)
+![Landlord for Laravel 5.2](readme-header.jpg)
 
-A general purpose multi-tenancy package for Laravel 5.2+. Accidentally derived from the work of [@tonydew](https://github.com/tonydew), and with help from [@rizqidjamaluddin](https://github.com/rizqidjamaluddin)
+![Build Status](https://travis-ci.org/HipsterJazzbo/Landlord.svg?branch=master)
+
+A single database multi-tenancy package for Laravel 5.2+.
 
 ## Installation
 
-To get started, require this package in your composer.json and run composer update:
+To get started, require this package:
 
-```json
-"aura-is-here/laravel-multi-tenant": "dev-master"
+```bash
+composer require hipsterjazzbo/landlord
 ```
 
-After updating composer, add the ServiceProvider to the providers array in `app/config/app.php`:
+Add the ServiceProvider to the providers array in `config/app.php`:
 
 ```php
-AuraIsHere\LaravelMultiTenant\LandlordServiceProvider::class,
-```
-
-You'll probably want to set up the alias:
-
-```php
-'Landlord' => AuraIsHere\LaravelMultiTenant\Facades\LandlordFacade::class
+HipsterJazzbo\Landlord\LandlordServiceProvider::class,
 ```
 
 You could also publish the config file:
 
 ```bash
-php artisan vendor:publish --provider="AuraIsHere\LaravelMultiTenant\LandlordServiceProvider"
+php artisan vendor:publish --provider="HipsterJazzbo\Landlord\LandlordServiceProvider"
 ```
 
 and set up your `tenant_column` setting, if you have an app-wide default.
 
 ## Usage
 
-First off, this package assumes that you have a column on all of your tenant-scoped tables that references which tenant each row belongs to.
+First off, this package assumes that you have at least one column on all of your tenant-scoped tables that references which tenant each row belongs to.
 
 For example, you might have a `companies` table, and all your other tables might have a `company_id` column (with a foreign key, right?).
 
-Next, you'll have to call `Landlord::addTenant($tenantColumn, $tenantId)`. It doesn't matter where, **as long as it happens on every request**. This is important; if you only set the tenant in your login method for example, that won't run for subsequent requests and queries will no longer be scoped.
+Next, you'll have to call `Landlord::addTenant($tenantColumn, $tenantId)`. It doesn't matter where, **as long as it happens on every request**. This is important; if you only set the tenant in your login method for example, that won't run for subsequent requests and queries will no longer be scoped. You almost certainly will want to do this in a middleware.
 
 Some examples of good places to call `Landlord::addTenant($tenantColumn, $tenantId)` might be:
 
@@ -52,10 +48,11 @@ Once you've got that all worked out, simply `use` the trait in all your models t
 ```php
 <?php
 
+use Illuminate\Database\EEloquent\Model;
 use AuraIsHere\LaravelMultiTenant\Traits\BelongsToTenant;
 
-class Model extends Eloquent {
-
+class ExampleModel extends Model
+{
     use BelongsToTenant;
 }
 ```
@@ -80,7 +77,7 @@ $allModels = Model::allTenants()->get(); //You can run any fluent query builder 
 
 When you are developing a multi tenanted application, it can be confusing sometimes why you keep getting `ModelNotFound` exceptions.
 
-Laravel Multi Tenant will catch those exceptions, and re-throw them as `ModelNotFoundForTenant`, to help you out :)
+Laravel Multi Tenant will catch those exceptions, and re-throw them as `TenantModelNotFoundException`, to help you out :)
 
 ## Contributing
 

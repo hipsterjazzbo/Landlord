@@ -13,7 +13,7 @@ class TenantModelNotFoundException extends ModelNotFoundException implements Ten
      */
     public function setModel($model)
     {
-        $this->model = $model;
+        parent::setModel($model);
 
         $this->message = "No query results for model [{$model}] when scoped by tenant.";
 
