@@ -4,7 +4,7 @@ namespace HipsterJazzbo\Landlord\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class LandlordFacade extends Facade
+class Landlord extends Facade
 {
     /**
      * Get the registered name of the component.
@@ -13,6 +13,6 @@ class LandlordFacade extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'HipsterJazzbo\LaravelMultiTenant\TenantScope';
+        return 'HipsterJazzbo\Landlord\Landlord';
     }
 }

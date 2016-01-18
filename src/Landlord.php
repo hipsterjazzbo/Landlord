@@ -25,7 +25,7 @@ class Landlord implements Scope
     protected $tenants = [];
 
     /**
-     * return tenants.
+     * Return tenants.
      *
      * @return array
      */
@@ -60,9 +60,9 @@ class Landlord implements Scope
             unset($this->tenants[$tenantColumn]);
 
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -134,6 +134,8 @@ class Landlord implements Scope
     }
 
     /**
+     * Gets the tenant id.
+     *
      * @param $tenantColumn
      *
      * @throws TenantColumnUnknownException
@@ -151,11 +153,21 @@ class Landlord implements Scope
         return $this->tenants[$tenantColumn];
     }
 
+    /**
+     * Disables the scoping of tenants.
+     *
+     * @return void
+     */
     public function disable()
     {
         $this->enabled = false;
     }
 
+    /**
+     * Enables the scoping of tenants.
+     *
+     * @return void
+     */
     public function enable()
     {
         $this->enabled = true;
