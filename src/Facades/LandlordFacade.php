@@ -2,6 +2,7 @@
 
 namespace HipsterJazzbo\Landlord\Facades;
 
+use HipsterJazzbo\Landlord\Landlord;
 use Illuminate\Support\Facades\Facade;
 
 class LandlordFacade extends Facade
@@ -13,6 +14,6 @@ class LandlordFacade extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'HipsterJazzbo\LaravelMultiTenant\TenantScope';
+        return Landlord::class;
     }
 }
