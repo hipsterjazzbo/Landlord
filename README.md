@@ -1,5 +1,4 @@
-Laravel Multi Tenant
-====================
+# Landlord for Laravel 5.2
 
 ![Landlord for Laravel 5.2](readme-header.jpg)
 
