@@ -1,13 +1,13 @@
 <?php
 
-namespace AuraIsHere\LaravelMultiTenant;
+namespace AuraIsHere\Landlord;
 
-use AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade;
+use AuraIsHere\Landlord\Facades\LandlordFacade;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
-class LaravelMultiTenantServiceProvider extends ServiceProvider
+class LandlordServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application events.
@@ -17,7 +17,7 @@ class LaravelMultiTenantServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            realpath(__DIR__ . '/../config/laravel-multi-tenant.php') => config_path('laravel-multi-tenant.php')
+            realpath(__DIR__ . '/../config/landlord.php') => config_path('landlord.php')
         ]);
     }
 
@@ -28,15 +28,15 @@ class LaravelMultiTenantServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(TenantScope::class, function () {
-            return new TenantScope();
+        $this->app->singleton(Landlord::class, function () {
+            return new Landlord();
         });
 
-        // Define alias 'TenantScope'
+        // Define alias 'Landlord'
         $this->app->booting(function () {
             $loader = AliasLoader::getInstance();
 
-            $loader->alias('TenantScope', TenantScopeFacade::class);
+            $loader->alias('Landlord', LandlordFacade::class);
         });
     }
 }

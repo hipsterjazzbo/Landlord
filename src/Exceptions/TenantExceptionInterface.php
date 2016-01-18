@@ -1,6 +1,6 @@
 <?php
 
-namespace AuraIsHere\LaravelMultiTenant\Exceptions;
+namespace AuraIsHere\Landlord\Exceptions;
 
 interface TenantExceptionInterface
 {

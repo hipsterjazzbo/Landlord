@@ -1,6 +1,6 @@
 <?php
 
-use AuraIsHere\LaravelMultiTenant\TenantScope;
+use AuraIsHere\Landlord\Landlord;
 use Mockery as m;
 
 class TenantScopeTest extends PHPUnit_Framework_TestCase
@@ -12,7 +12,7 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
 
     public function testAccessors()
     {
-        $tenantScope = new TenantScope();
+        $tenantScope = new Landlord();
 
         $tenantScope->addTenant('column', 1);
 
@@ -29,9 +29,9 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
 
     public function testApply()
     {
-        $scope   = m::mock('AuraIsHere\LaravelMultiTenant\TenantScope');
-        $builder = m::mock('Illuminate\Database\Eloquent\Builder');
-        $model   = m::mock('Illuminate\Database\Eloquent\Model');
+        $scope   = m::mock(\AuraIsHere\Landlord\Landlord::class);
+        $builder = m::mock(\Illuminate\Database\Eloquent\Builder::class);
+        $model   = m::mock(\Illuminate\Database\Eloquent\Model::class);
 
         $scope->shouldDeferMissing();
         $scope->shouldReceive('getModelTenants')->once()->with($model)->andReturn(['column' => 1]);
@@ -46,8 +46,8 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
 
     public function testCreating()
     {
-        $scope = m::mock('AuraIsHere\LaravelMultiTenant\TenantScope');
-        $model = m::mock('Illuminate\Database\Eloquent\Model');
+        $scope = m::mock(\AuraIsHere\Landlord\Landlord::class);
+        $model = m::mock(\Illuminate\Database\Eloquent\Model::class);
 
         $scope->shouldDeferMissing();
         $scope->shouldReceive('getModelTenants')->with($model)->andReturn(['column' => 1]);
@@ -62,8 +62,8 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
 
     public function testGetModelTenants()
     {
-        $scope = m::mock('AuraIsHere\LaravelMultiTenant\TenantScope');
-        $model = m::mock('Illuminate\Database\Eloquent\Model');
+        $scope = m::mock(\AuraIsHere\Landlord\Landlord::class);
+        $model = m::mock(\Illuminate\Database\Eloquent\Model::class);
 
         $scope->shouldDeferMissing();
         $scope->shouldReceive('getTenantId')->once()->andReturn(1);
@@ -77,20 +77,20 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \AuraIsHere\LaravelMultiTenant\Exceptions\TenantColumnUnknownException
+     * @expectedException \AuraIsHere\Landlord\Exceptions\TenantColumnUnknownException
      */
     public function testGetTenantIdThrowsException()
     {
-        $scope = new TenantScope();
+        $scope = new Landlord();
 
         $scope->getTenantId('column');
     }
 
     public function testDisable()
     {
-        $scope   = m::mock('AuraIsHere\LaravelMultiTenant\TenantScope');
-        $builder = m::mock('Illuminate\Database\Eloquent\Builder');
-        $model   = m::mock('Illuminate\Database\Eloquent\Model');
+        $scope   = m::mock(\AuraIsHere\Landlord\Landlord::class);
+        $builder = m::mock(\Illuminate\Database\Eloquent\Builder::class);
+        $model   = m::mock(\Illuminate\Database\Eloquent\Model::class);
 
         $scope->shouldDeferMissing();
         $scope->shouldReceive('getModelTenants')->with($model)->andReturn(['column' => 1])->never();

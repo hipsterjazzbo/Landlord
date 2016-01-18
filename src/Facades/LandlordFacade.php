@@ -1,10 +1,10 @@
 <?php
 
-namespace AuraIsHere\LaravelMultiTenant\Facades;
+namespace AuraIsHere\Landlord\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class TenantScopeFacade extends Facade
+class LandlordFacade extends Facade
 {
     /**
      * Get the registered name of the component.

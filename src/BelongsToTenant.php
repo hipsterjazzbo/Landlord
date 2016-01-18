@@ -1,23 +1,23 @@
 <?php
 
-namespace AuraIsHere\LaravelMultiTenant\Traits;
+namespace AuraIsHere\Landlord;
 
-use AuraIsHere\LaravelMultiTenant\Exceptions\TenantModelNotFoundException;
-use AuraIsHere\LaravelMultiTenant\TenantScope;
+use AuraIsHere\Landlord\Exceptions\TenantModelNotFoundException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Scope;
 
 /**
- * Class TenantScopedModelTrait.
+ * Class BelongsToTenant.
  *
- * @method static void addGlobalScope(\Illuminate\Database\Eloquent\Scope $scope)
+ * @method static void addGlobalScope(Scope $scope)
  * @method static void creating(callable $callback)
  */
-trait TenantScopedModelTrait
+trait BelongsToTenant
 {
     public static function bootTenantScopedModelTrait()
     {
-        $tenantScope = app(TenantScope::class);
+        $tenantScope = app(Landlord::class);
 
         // Add the global scope that will handle all operations except create()
         static::addGlobalScope($tenantScope);
@@ -37,11 +37,11 @@ trait TenantScopedModelTrait
      */
     public static function allTenants()
     {
-        return with(new static())->newQueryWithoutScope(TenantScope::class);
+        return (new static())->newQueryWithoutScope(Landlord::class);
     }
 
     /**
-     * Get the name of the "tenant id" column.
+     * Get the name of the "tenant id" column(s).
      *
      * @return string
      */
@@ -64,7 +64,7 @@ trait TenantScopedModelTrait
         try {
             return parent::query()->findOrFail($id, $columns);
         } catch (ModelNotFoundException $e) {
-            throw with(new TenantModelNotFoundException())->setModel(get_called_class());
+            throw (new TenantModelNotFoundException())->setModel(get_called_class());
         }
     }
 }

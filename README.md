@@ -16,19 +16,19 @@ To get started, require this package in your composer.json and run composer upda
 After updating composer, add the ServiceProvider to the providers array in `app/config/app.php`:
 
 ```php
-AuraIsHere\LaravelMultiTenant\LaravelMultiTenantServiceProvider::class,
+AuraIsHere\LaravelMultiTenant\LandlordServiceProvider::class,
 ```
 
 You'll probably want to set up the alias:
 
 ```php
-'TenantScope' => AuraIsHere\LaravelMultiTenant\Facades\TenantScopeFacade::class
+'Landlord' => AuraIsHere\LaravelMultiTenant\Facades\LandlordFacade::class
 ```
 
 You could also publish the config file:
 
 ```bash
-php artisan vendor:publish --provider="AuraIsHere\LaravelMultiTenant\LaravelMultiTenantServiceProvider"
+php artisan vendor:publish --provider="AuraIsHere\LaravelMultiTenant\LandlordServiceProvider"
 ```
 
 and set up your `tenant_column` setting, if you have an app-wide default.
@@ -39,9 +39,9 @@ First off, this package assumes that you have a column on all of your tenant-sco
 
 For example, you might have a `companies` table, and all your other tables might have a `company_id` column (with a foreign key, right?).
 
-Next, you'll have to call `TenantScope::addTenant($tenantColumn, $tenantId)`. It doesn't matter where, **as long as it happens on every request**. This is important; if you only set the tenant in your login method for example, that won't run for subsequent requests and queries will no longer be scoped.
+Next, you'll have to call `Landlord::addTenant($tenantColumn, $tenantId)`. It doesn't matter where, **as long as it happens on every request**. This is important; if you only set the tenant in your login method for example, that won't run for subsequent requests and queries will no longer be scoped.
 
-Some examples of good places to call `TenantScope::addTenant($tenantColumn, $tenantId)` might be:
+Some examples of good places to call `Landlord::addTenant($tenantColumn, $tenantId)` might be:
 
 - In a global Middleware
 - In an oauth system, wherever you're checking the token on each request
@@ -52,11 +52,11 @@ Once you've got that all worked out, simply `use` the trait in all your models t
 ```php
 <?php
 
-use AuraIsHere\LaravelMultiTenant\Traits\TenantScopedModelTrait;
+use AuraIsHere\LaravelMultiTenant\Traits\BelongsToTenant;
 
 class Model extends Eloquent {
 
-    use TenantScopedModelTrait;
+    use BelongsToTenant;
 }
 ```
 

@@ -1,13 +1,13 @@
 <?php
 
-namespace AuraIsHere\LaravelMultiTenant;
+namespace AuraIsHere\Landlord;
 
-use AuraIsHere\LaravelMultiTenant\Exceptions\TenantColumnUnknownException;
+use AuraIsHere\Landlord\Exceptions\TenantColumnUnknownException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 
-class TenantScope implements Scope
+class Landlord implements Scope
 {
     /**
      * @var bool
@@ -80,8 +80,8 @@ class TenantScope implements Scope
     /**
      * Apply the scope to a given Eloquent query builder.
      *
-     * @param Builder                             $builder
-     * @param Model|Traits\TenantScopedModelTrait $model
+     * @param Builder                                    $builder
+     * @param Model|\AuraIsHere\Landlord\BelongsToTenant $model
      */
     public function apply(Builder $builder, Model $model)
     {
@@ -95,7 +95,7 @@ class TenantScope implements Scope
     }
 
     /**
-     * @param Model|Traits\TenantScopedModelTrait $model
+     * @param Model|\AuraIsHere\Landlord\BelongsToTenant $model
      */
     public function creating(Model $model)
     {
@@ -113,7 +113,7 @@ class TenantScope implements Scope
     /**
      * Return which tenantColumn => tenantId are really in use for this model.
      *
-     * @param Model|Traits\TenantScopedModelTrait $model
+     * @param Model|\AuraIsHere\Landlord\BelongsToTenant $model
      *
      * @throws TenantColumnUnknownException
      *
