@@ -4,7 +4,7 @@
 
 ![Build Status](https://travis-ci.org/HipsterJazzbo/Landlord.svg?branch=master)
 
-A single database multi-tenancy package for Laravel 5.2+.
+A single database multi-tenancy package for Laravel 5.2+. (Formerly https://github.com/AuraEQ/laravel-multi-tenant)
 
 ## Installation
 
