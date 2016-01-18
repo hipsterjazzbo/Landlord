@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Scope;
  */
 trait BelongsToTenant
 {
-    public static function bootTenantScopedModelTrait()
+    public static function bootBelongsToTenant()
     {
         $tenantScope = app(Landlord::class);
 
