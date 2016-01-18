@@ -47,7 +47,7 @@ trait BelongsToTenant
      */
     public function getTenantColumns()
     {
-        return isset($this->tenantColumns) ? $this->tenantColumns : config('tenant.default_tenant_columns');
+        return isset($this->tenantColumns) ? $this->tenantColumns : config('landlord.default_tenant_columns');
     }
 
     /**
