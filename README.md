@@ -48,7 +48,7 @@ Once you've got that all worked out, simply `use` the trait in all your models t
 <?php
 
 use Illuminate\Database\Eloquent\Model;
-use HipsterJazzbo\LaravelMultiTenant\BelongsToTenant;
+use HipsterJazzbo\Landlord\BelongsToTenant;
 
 class ExampleModel extends Model
 {
