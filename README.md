@@ -14,7 +14,7 @@ To get started, require this package:
 composer require hipsterjazzbo/landlord
 ```
 
-Add the ServiceProvider to the providers array in `config/app.php`:
+Add the ServiceProvider and Alias to their relative arrays in `config/app.php`:
 
 ```php
     'providers' => [
