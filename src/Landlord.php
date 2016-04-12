@@ -44,7 +44,11 @@ class Landlord implements Scope
     {
         $this->enable();
 
-        $this->tenants[$tenantColumn] = $tenantId;
+        if(empty($this->tenants[$tenantColumn])) {
+            $this->tenants[$tenantColumn] = [$tenantId];
+        } else {
+            $this->tenants[$tenantColumn] = array_merge($this->tenants[$tenantColumn], [$tenantId]);
+        }
     }
 
     /**
@@ -89,8 +93,8 @@ class Landlord implements Scope
             return;
         }
 
-        foreach ($this->getModelTenants($model) as $tenantColumn => $tenantId) {
-            $builder->where($model->getTable() . '.' . $tenantColumn, '=', $tenantId);
+        foreach ($this->getModelTenants($model) as $tenantColumn => $tenantIds) {
+            $builder->whereIn($model->getTable() . '.' . $tenantColumn, $tenantIds);
         }
     }
 
