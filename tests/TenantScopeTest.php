@@ -34,7 +34,7 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
         $model   = m::mock(\Illuminate\Database\Eloquent\Model::class);
 
         $scope->shouldDeferMissing();
-        $scope->shouldReceive('getModelTenants')->once()->with($model)->andReturn(['column' => 1]);
+        $scope->shouldReceive('getModelTenants')->once()->with($model)->andReturn(['column' => [1]]);
 
         $builder->shouldReceive('getModel')->andReturn($model);
         $builder->shouldReceive('whereIn')->once()->with('table.column', 1);
@@ -50,7 +50,7 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
         $model = m::mock(\Illuminate\Database\Eloquent\Model::class);
 
         $scope->shouldDeferMissing();
-        $scope->shouldReceive('getModelTenants')->with($model)->andReturn(['column' => 1]);
+        $scope->shouldReceive('getModelTenants')->with($model)->andReturn(['column' => [1]]);
 
         $model->shouldDeferMissing();
         $model->shouldReceive('hasGlobalScope')->andReturn(true);
