@@ -45,9 +45,9 @@ class Landlord implements Scope
         $this->enable();
 
         if(empty($this->tenants[$tenantColumn])) {
-            $this->tenants[$tenantColumn] = [$tenantId];
+            $this->tenants[$tenantColumn] = is_array($tenantId) ? $tenantId : [$tenantId];
         } else {
-            $this->tenants[$tenantColumn] = array_merge($this->tenants[$tenantColumn], [$tenantId]);
+            $this->tenants[$tenantColumn] = array_merge($this->tenants[$tenantColumn], is_array($tenantId) ? $tenantId : [$tenantId]);
         }
     }
 
@@ -110,7 +110,11 @@ class Landlord implements Scope
 
         // Otherwise, scope the new model
         foreach ($this->getModelTenants($model) as $tenantColumn => $tenantId) {
-            $model->{$tenantColumn} = $tenantId;
+            if(count($tenantId) == 1){
+                reset($tenantId);
+                $id = current($tenantId);
+                $model->{$tenantColumn} = $id;
+            }
         }
     }
 
