@@ -37,7 +37,7 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
         $scope->shouldReceive('getModelTenants')->once()->with($model)->andReturn(['column' => [1]]);
 
         $builder->shouldReceive('getModel')->andReturn($model);
-        $builder->shouldReceive('whereIn')->once()->with('table.column', 1);
+        $builder->shouldReceive('whereIn')->once()->with('table.column', [1]);
 
         $model->shouldReceive('getTable')->andReturn('table');
 
