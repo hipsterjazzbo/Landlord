@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Scope;
  * Class BelongsToTenant.
  *
  * @method static void addGlobalScope(Scope $scope)
- * @method static void creating(callable $callback)
+ * @method static void saving(callable $callback)
  */
 trait BelongsToTenant
 {
@@ -23,8 +23,8 @@ trait BelongsToTenant
         static::addGlobalScope($tenantScope);
 
         // Add an observer that will automatically add the tenant id when create()-ing
-        static::creating(function (Model $model) use ($tenantScope) {
-            $tenantScope->creating($model);
+        static::saving(function (Model $model) use ($tenantScope) {
+            $tenantScope->saving($model);
         });
     }
 
