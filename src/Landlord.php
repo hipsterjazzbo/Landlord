@@ -97,7 +97,7 @@ class Landlord implements Scope
     /**
      * @param Model|\HipsterJazzbo\Landlord\BelongsToTenant $model
      */
-    public function creating(Model $model)
+    public function saving(Model $model)
     {
         // If the model has had the global scope removed, bail
         if (! $model->hasGlobalScope($this)) {

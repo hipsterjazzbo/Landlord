@@ -44,7 +44,7 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
         $scope->apply($builder, $model);
     }
 
-    public function testCreating()
+    public function testSaving()
     {
         $scope = m::mock(\HipsterJazzbo\Landlord\Landlord::class);
         $model = m::mock(\Illuminate\Database\Eloquent\Model::class);
@@ -55,7 +55,7 @@ class TenantScopeTest extends PHPUnit_Framework_TestCase
         $model->shouldDeferMissing();
         $model->shouldReceive('hasGlobalScope')->andReturn(true);
 
-        $scope->creating($model);
+        $scope->saving($model);
 
         $this->assertEquals(1, $model->column);
     }
