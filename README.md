@@ -26,7 +26,7 @@ Add the ServiceProvider and Alias to their relative arrays in `config/app.php`:
 
     'aliases' => [
         ...
-        'Landlord'   => HipsterJazzbo\Landlord\Facades\Landlord::class,
+        'Landlord'   => HipsterJazzbo\Landlord\Facades\LandlordFacade::class,
     ],
 ```
 
@@ -86,7 +86,7 @@ $allModels = Model::allTenants()->get(); //You can run any fluent query builder 
 
 When you are developing a multi tenanted application, it can be confusing sometimes why you keep getting `ModelNotFound` exceptions.
 
-Laravel Multi Tenant will catch those exceptions, and re-throw them as `TenantModelNotFoundException`, to help you out :)
+Landlord will catch those exceptions, and re-throw them as `TenantModelNotFoundException`, to help you out :)
 
 ## Contributing
 
