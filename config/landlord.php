@@ -34,6 +34,6 @@ return [
     |
     */
 
-    'query_with_table_name' => false,
+    'query_with_table_name' => true,
 
 ];
