@@ -1,6 +1,6 @@
 {
     "name": "hipsterjazzbo/landlord",
-    "description": "A simple, single database multi-tenancy solution for Laravel 5.2+",
+    "description": "A simple, single database multi-tenancy solution for Laravel 5.3+",
     "license": "MIT",
     "keywords": ["tenant", "tenancy", "multitenant", "multitenancy"],
     "authors": [
@@ -16,7 +16,7 @@
     "require-dev": {
         "mockery/mockery": "~0.9",
         "phpunit/phpunit": "~4.0",
-        "laravel/framework": "5.2.*"
+        "laravel/framework": "5.3.*"
     },
     "autoload": {
         "psr-4": {
