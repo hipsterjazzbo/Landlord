@@ -44,7 +44,11 @@ class Landlord implements Scope
     {
         $this->enable();
 
-        $this->tenants[$tenantColumn] = $tenantId;
+        if(empty($this->tenants[$tenantColumn])) {
+            $this->tenants[$tenantColumn] = is_array($tenantId) ? $tenantId : [$tenantId];
+        } else {
+            $this->tenants[$tenantColumn] = array_merge($this->tenants[$tenantColumn], is_array($tenantId) ? $tenantId : [$tenantId]);
+        }
     }
 
     /**
@@ -89,8 +93,8 @@ class Landlord implements Scope
             return;
         }
 
-        foreach ($this->getModelTenants($model) as $tenantColumn => $tenantId) {
-            $builder->where($model->getTable() . '.' . $tenantColumn, '=', $tenantId);
+        foreach ($this->getModelTenants($model) as $tenantColumn => $tenantIds) {
+            $builder->whereIn($model->getTable() . '.' . $tenantColumn, $tenantIds);
         }
     }
 
@@ -106,7 +110,11 @@ class Landlord implements Scope
 
         // Otherwise, scope the new model
         foreach ($this->getModelTenants($model) as $tenantColumn => $tenantId) {
-            $model->{$tenantColumn} = $tenantId;
+            if(count($tenantId) == 1){
+                reset($tenantId);
+                $id = current($tenantId);
+                $model->{$tenantColumn} = $id;
+            }
         }
     }
 
