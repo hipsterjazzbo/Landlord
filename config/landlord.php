@@ -20,4 +20,20 @@ return [
 
     'default_tenant_columns' => ['company_id'],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Query using table name
+    |--------------------------------------------------------------------------
+    |
+    | When building the tenant query filter, it´s common to use the table name
+    | with the column, using the dot notation. At some situations it´s better
+    | to use only the column name.
+    |
+    | If you are using a database as MongoDB, set this option to false. Default 
+    | is true.
+    |
+    */
+
+    'query_with_table_name' => true,
+
 ];
