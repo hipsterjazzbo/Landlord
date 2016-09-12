@@ -26,7 +26,7 @@ Add the ServiceProvider and Alias to their relative arrays in `config/app.php`:
 
     'aliases' => [
         ...
-        'Landlord'   => HipsterJazzbo\Landlord\Facades\LandlordFacade::class,
+        'Landlord'   => HipsterJazzbo\Landlord\Facades\Landlord::class,
     ],
 ```
 
