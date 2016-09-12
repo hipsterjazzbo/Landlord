@@ -1,6 +1,6 @@
 <?php
 
-use HipsterJazzbo\Landlord\BelongsToTenant;
+use HipsterJazzbo\Landlord\BelongsToTenants;
 use HipsterJazzbo\Landlord\Facades\Landlord;
 use HipsterJazzbo\Landlord\TenantManager;
 use Illuminate\Database\Eloquent\Model;
@@ -101,17 +101,17 @@ class LandlordTest extends TestCase
 
 class ModelStub extends Model
 {
-    use BelongsToTenant;
+    use BelongsToTenants;
 
     public $tenants = ['tenant_a_id'];
 }
 
 class TenantA extends Model
 {
-    use BelongsToTenant;
+    use BelongsToTenants;
 }
 
 class TenantB extends Model
 {
-    use BelongsToTenant;
+    use BelongsToTenants;
 }

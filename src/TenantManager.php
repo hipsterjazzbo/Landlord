@@ -168,7 +168,7 @@ class TenantManager
      * Get the tenants that are actually applicable to the given
      * model, in case they've been manually specified.
      *
-     * @param Model|BelongsToTenant $model
+     * @param Model|BelongsToTenants $model
      *
      * @return Collection
      */

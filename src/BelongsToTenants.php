@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 /**
  * @mixin Model
  */
-trait BelongsToTenant
+trait BelongsToTenants
 {
     public static function bootBelongsToTenant()
     {
