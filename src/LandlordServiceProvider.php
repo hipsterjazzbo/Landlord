@@ -2,9 +2,6 @@
 
 namespace HipsterJazzbo\Landlord;
 
-use HipsterJazzbo\Landlord\Facades\LandlordFacade;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
 class LandlordServiceProvider extends ServiceProvider
@@ -28,15 +25,8 @@ class LandlordServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(Landlord::class, function () {
-            return new Landlord();
-        });
-
-        // Define alias 'Landlord'
-        $this->app->booting(function () {
-            $loader = AliasLoader::getInstance();
-
-            $loader->alias('Landlord', LandlordFacade::class);
+        $this->app->singleton(TenantManager::class, function () {
+            return new TenantManager();
         });
     }
 }
