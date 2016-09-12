@@ -3,33 +3,28 @@
 namespace HipsterJazzbo\Landlord;
 
 use HipsterJazzbo\Landlord\Exceptions\TenantModelNotFoundException;
+use HipsterJazzbo\Landlord\Facades\Landlord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\Eloquent\Scope;
 
 /**
- * Class BelongsToTenant.
- *
- * @method static void addGlobalScope(Scope $scope)
- * @method static void creating(callable $callback)
+ * @mixin Model
  */
 trait BelongsToTenant
 {
     public static function bootBelongsToTenant()
     {
-        $tenantScope = app(Landlord::class);
+        // Add a global scope for each tenant this model should be scoped by.
+        Landlord::applyTenantScopes(new static());
 
-        // Add the global scope that will handle all operations except create()
-        static::addGlobalScope($tenantScope);
-
-        // Add an observer that will automatically add the tenant id when create()-ing
-        static::creating(function (Model $model) use ($tenantScope) {
-            $tenantScope->creating($model);
+        // Add tenants automatically when creating models
+        static::creating(function (Model $model) {
+            Landlord::newModel($model);
         });
     }
 
     /**
-     * Returns a new builder without the tenant scope applied.
+     * Returns a new query builder without any of the tenant scopes applied.
      *
      *     $allUsers = User::allTenants()->get();
      *
@@ -37,32 +32,34 @@ trait BelongsToTenant
      */
     public static function allTenants()
     {
-        return (new static())->newQueryWithoutScope(Landlord::class);
+        return Landlord::newQueryWithoutTenants(new static());
     }
 
     /**
-     * Get the name of the "tenant id" column(s).
+     * Get the tenants for this model.
      *
-     * @return string
+     * @return array
      */
-    public function getTenantColumns()
+    public function getTenants()
     {
-        return isset($this->tenantColumns) ? $this->tenantColumns : config('landlord.default_tenant_columns');
+        return isset($this->tenants) ? $this->tenants : config('landlord.default_tenants');
     }
 
     /**
-     * Override the default findOrFail method so that we can rethrow a more useful exception.
-     * Otherwise it can be very confusing why queries don't work because of tenant scoping issues.
+     * Override the default findOrFail method so that we can re-throw
+     * a more useful exception. Otherwise it can be very confusing
+     * why queries don't work because of tenant scoping issues.
      *
-     * @param       $id
+     * @param mixed $id
      * @param array $columns
      *
+     * @return \Illuminate\Database\Eloquent\Collection|Model
      * @throws TenantModelNotFoundException
      */
     public static function findOrFail($id, $columns = ['*'])
     {
         try {
-            return parent::query()->findOrFail($id, $columns);
+            return static::query()->findOrFail($id, $columns);
         } catch (ModelNotFoundException $e) {
             throw (new TenantModelNotFoundException())->setModel(get_called_class());
         }
