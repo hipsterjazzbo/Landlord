@@ -92,7 +92,7 @@ class LandlordTest extends TestCase
         $model = new ModelStub();
 
         $landlord->newModel($model);
-    
+
         $this->assertEquals(1, $model->tenant_a_id);
 
         $this->assertNull($model->tenant_b_id);

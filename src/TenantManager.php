@@ -51,8 +51,7 @@ class TenantManager
      * Add a tenant to scope by.
      *
      * @param string|Model $tenant
-     *
-     * @param mixed|null $id
+     * @param mixed|null   $id
      */
     public function addTenant($tenant, $id = null)
     {
@@ -106,7 +105,7 @@ class TenantManager
 
         $this->modelTenants($model)->each(function ($id, $tenant) use ($model) {
             $model->addGlobalScope($tenant, function (Builder $builder) use ($tenant, $id, $model) {
-                $builder->where($model->getTable() . '.' . $tenant, '=', $id);
+                $builder->where($model->getTable().'.'.$tenant, '=', $id);
             });
         });
     }
