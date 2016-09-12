@@ -14,7 +14,7 @@ class LandlordServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            realpath(__DIR__.'/../config/landlord.php') => config_path('landlord.php')
+            realpath(__DIR__.'/../config/landlord.php') => config_path('landlord.php'),
         ]);
     }
 

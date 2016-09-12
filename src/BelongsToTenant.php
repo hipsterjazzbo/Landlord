@@ -53,8 +53,9 @@ trait BelongsToTenant
      * @param mixed $id
      * @param array $columns
      *
-     * @return \Illuminate\Database\Eloquent\Collection|Model
      * @throws TenantModelNotFoundException
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|Model
      */
     public static function findOrFail($id, $columns = ['*'])
     {

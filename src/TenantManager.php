@@ -99,7 +99,7 @@ class TenantManager
      */
     public function applyTenantScopes(Model $model)
     {
-        if (! $this->enabled) {
+        if (!$this->enabled) {
             return;
         }
 
@@ -117,12 +117,12 @@ class TenantManager
      */
     public function newModel(Model $model)
     {
-        if (! $this->enabled) {
+        if (!$this->enabled) {
             return;
         }
 
         $this->modelTenants($model)->each(function ($id, $tenant) use ($model) {
-            if (! isset($model->{$tenant})) {
+            if (!isset($model->{$tenant})) {
                 $model->setAttribute($tenant, $id);
             }
         });
@@ -145,8 +145,9 @@ class TenantManager
      *
      * @param string|Model $tenant
      *
-     * @return string
      * @throws TenantColumnUnknownException
+     *
+     * @return string
      */
     protected function getTenantKey($tenant)
     {
@@ -154,7 +155,7 @@ class TenantManager
             $tenant = $tenant->getForeignKey();
         }
 
-        if (! is_string($tenant)) {
+        if (!is_string($tenant)) {
             throw new TenantColumnUnknownException(
                 '$tenant must be a string key or an instance of \Illuminate\Database\Eloquent\Model'
             );
