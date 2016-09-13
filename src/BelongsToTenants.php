@@ -75,7 +75,7 @@ trait BelongsToTenants
             return static::query()->findOrFail($id, $columns);
         } catch (ModelNotFoundException $e) {
             // If it DOES exist, just not for this tenant, throw a nicer exception
-            if (! is_null(static::allTenants()->find($id, $columns))) {
+            if (!is_null(static::allTenants()->find($id, $columns))) {
                 throw (new ModelNotFoundForTenantException())->setModel(get_called_class());
             }
 
