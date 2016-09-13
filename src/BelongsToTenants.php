@@ -53,7 +53,7 @@ trait BelongsToTenants
      * @param mixed $id
      * @param array $columns
      *
-     * @throws TenantModelNotFoundException
+     * @throws ModelNotFoundForTenantException
      *
      * @return \Illuminate\Database\Eloquent\Collection|Model
      */
@@ -62,7 +62,12 @@ trait BelongsToTenants
         try {
             return static::query()->findOrFail($id, $columns);
         } catch (ModelNotFoundException $e) {
-            throw (new TenantModelNotFoundException())->setModel(get_called_class());
+            // If it DOES exist, just not for this tenant, throw a nicer exception
+            if (! is_null(static::allTenants()->find($id, $columns))) {
+                throw (new ModelNotFoundForTenantException())->setModel(get_called_class());
+            }
+
+            throw $e;
         }
     }
 }
