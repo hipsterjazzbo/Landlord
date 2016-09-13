@@ -1,10 +1,11 @@
-# Landlord for Laravel 5.2
+# Landlord for Laravel & Lumen 5.2+
 
-![Landlord for Laravel 5.2](readme-header.jpg)
+![Landlord for Laravel & Lumen 5.2+](https://github.com/HipsterJazzbo/Landlord/raw/master/readme-header.jpg)
 
-![Build Status](https://travis-ci.org/HipsterJazzbo/Landlord.svg?branch=master)
+![StyleCI Status](https://styleci.io/repos/49851417/shield?branch=v2.0-wip)
+![Build Status](https://travis-ci.org/HipsterJazzbo/Landlord.svg?branch=v2.0-wip)
 
-A single database multi-tenancy package for Laravel 5.2+. (Formerly https://github.com/AuraEQ/laravel-multi-tenant)
+A single database multi-tenancy package for Laravel & Lumen 5.2+.
 
 ## Installation
 
@@ -14,16 +15,20 @@ To get started, require this package:
 composer require hipsterjazzbo/landlord
 ```
 
-Add the ServiceProvider and Alias to their relative arrays in `config/app.php`:
+### Laravel
+
+Add the ServiceProvider in `config/app.php`:
 
 ```php
     'providers' => [
         ...
         HipsterJazzbo\Landlord\LandlordServiceProvider::class,
     ],
+```
 
-...
+Register the Facade if you’d like:
 
+```php
     'aliases' => [
         ...
         'Landlord'   => HipsterJazzbo\Landlord\Facades\Landlord::class,
@@ -36,58 +41,145 @@ You could also publish the config file:
 php artisan vendor:publish --provider="HipsterJazzbo\Landlord\LandlordServiceProvider"
 ```
 
-and set up your `tenant_column` setting, if you have an app-wide default.
+and set your `default_tenant_columns` setting, if you have an app-wide default. LandLord will use this setting to scope models that don’t have a `$tenantColumns` property set.
+
+### Lumen
+
+You'll need to set the service provider in your `bootstrap/app.php`:
+
+```php
+$app->register(HipsterJazzbo\Landlord\LandlordServiceProvider::class);
+```
+
+And make sure you've un-commented `$app->withEloquent()`.
 
 ## Usage
 
-First off, this package assumes that you have at least one column on all of your tenant-scoped tables that references which tenant each row belongs to.
+This package assumes that you have at least one column on all of your Tenant scoped tables that references which tenant each row belongs to.
 
-For example, you might have a `companies` table, and all your other tables might have a `company_id` column (with a foreign key, right?).
+For example, you might have a `companies` table, and a bunch of other tables that have a `company_id` column.
 
-Next, you'll have to call `Landlord::addTenant($tenantColumn, $tenantId)`. It doesn't matter where, **as long as it happens on every request**. This is important; if you only set the tenant in your login method for example, that won't run for subsequent requests and queries will no longer be scoped. You almost certainly will want to do this in a middleware.
+### Adding and Removing Tenants
 
-Some examples of good places to call `Landlord::addTenant($tenantColumn, $tenantId)` might be:
+You can tell Landlord to automatically scope by a given Tenant by calling `addTenant()`, either from the `Landlord` facade, or by injecting an instance of `TenantManager()`.
 
-- In a global Middleware
-- In an oauth system, wherever you're checking the token on each request
-- In the constructor of a base controller
-
-Once you've got that all worked out, simply `use` the trait in all your models that you'd like to scope by tenant:
+You can pass in either a tenant column and id:
 
 ```php
-<?php
+Landlord::addTenant('tenant_id', 1);
+```
+
+Or an instance of a Tenant model:
+
+```php
+$tenant = Tenant::find(1);
+
+Landlord::addTenant($tenant);
+```
+
+If you pass a Model instance, Landlord will use Eloquent’s `getForeignKey()` method to decide the tenant column name.
+
+You can add as many tenants as you need to, however Landlord will only allow **one** of each type of tenant at a time.
+
+To remove a tenant and stop scoping by it, simply call `removeTenant()`:
+
+```php
+Landlord::removeTenant('tenant_id');
+
+// Or you can again pass a Model instance:
+$tenant = Tenant::find(1);
+
+Landlord::removeTenant($tenant);
+```
+
+You can also check whether Landlord currently is scoping by a given tenant:
+
+```php
+// As you would expect by now, $tenant can be either a string column name or a Model instance
+Landlord::hasTenant($tenant);
+```
+
+And if for some reason you need to, you can retrieve Landlord's tenants:
+
+```php
+// $tenants is a Laravel Collection object, in the format 'tenant_id' => 1
+$tenants = Landlord::getTenants();
+```
+
+> **IMPORTANT NOTE:** Landlord is stateless. This means that when you call `addTenant()`, it will only scope the *current request*.
+> 
+> Make sure that you are adding your tenants in such a way that it happens on every request, and before you need Models scoped, like in a middleware or as part of a stateless authentication method like OAuth.
+
+### Setting up your Models
+
+To set up a model to be scoped automatically, simply use the `BelongsToTenants` trait:
+
+```php
 
 use Illuminate\Database\Eloquent\Model;
-use HipsterJazzbo\Landlord\BelongsToTenant;
+use HipsterJazzbo\Landlord\BelongsToTenants;
 
 class ExampleModel extends Model
 {
-    use BelongsToTenant;
+    use BelongsToTenants;
 }
 ```
 
-Henceforth, all operations against that model will be scoped automatically.
-
-You can also set a `$tenantColumns` property on the model to override the tenants applicable to that model.
+If you’d like to override the tenants that apply to a particular model, you can set the `$tenantColumns` property:
 
 ```php
-$models = Model::all(); // Only the Models with the correct tenant id
 
-$model = Model::find(1); // Will fail if the Model with `id` 1 belongs to a different tenant
+use Illuminate\Database\Eloquent\Model;
+use HipsterJazzbo\Landlord\BelongsToTenants;
 
-$newModel = Model::create(); // Will have the tenant id added automatically
+class ExampleModel extends Model
+{
+    use BelongsToTenants;
+    
+    public $tenantColumns = ['tenant_id'];
+}
 ```
 
-If you need to run queries across all tenants, you can do it easily:
+### Creating new Tenant scoped Models
+
+When you create a new instance of a Model which uses `BelongsToTenants`, Landlord will automatically add any applicable Tenant ids, if they are not already set:
 
 ```php
-$allModels = Model::allTenants()->get(); //You can run any fluent query builder methods here, and they will not be scoped by tenant
+// 'tenant_id' will automatically be set by Landlord
+$model = ExampleModel::create(['name' => 'whatever']);
 ```
 
-When you are developing a multi tenanted application, it can be confusing sometimes why you keep getting `ModelNotFound` exceptions.
+### Querying Tenant scoped Models
 
-Landlord will catch those exceptions, and re-throw them as `TenantModelNotFoundException`, to help you out :)
+After you've added tenants, all queries against a Model which uses `BelongsToTenant` will be scoped automatically:
+
+```php
+// This will only include Models belonging to the current tenant(s)
+ExampleModel::all();
+
+// This will fail with a ModelNotFoundForTenantException if it belongs to the wrong tenant
+ExampleModel::find(2);
+```
+
+> **Note:** When you are developing a multi tenanted application, it can be confusing sometimes why you keep getting `ModelNotFound` exceptions for rows that DO exist, because they belong to the wrong tenant.
+>
+> Landlord will catch those exceptions, and re-throw them as `ModelNotFoundForTenantException`, to help you out :)
+
+If you need to query across all tenants, you can use `allTenants()`:
+
+```php
+// Will include results from ALL tenants, just for this query
+ExampleModel::allTenants()->get()
+```
+
+Under the hood, Landlord uses Laravel's [anonymous global scopes](https://laravel.com/docs/5.3/eloquent#global-scopes). This means that if you are scoping by multiple tenants simultaneously, and you want to exclude one of the for a single query, you can do so:
+
+```php
+// Will not scope by 'tenant_id', but will continue to scope by any other tenants that have been set
+ExampleModel::withoutGlobalScope('tenant_id')->get();
+```
+
 
 ## Contributing
 
-Please! This is not yet a complete solution, but there's no point in all of us re-inventing this wheel over and over. If you find an issue, or have a better way to do something, open an issue or a pull request.
+If you find an issue, or have a better way to do something, feel free to open an issue or a pull request.
