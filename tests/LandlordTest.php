@@ -108,10 +108,10 @@ class ModelStub extends Model
 
 class TenantA extends Model
 {
-    use BelongsToTenants;
+    //
 }
 
 class TenantB extends Model
 {
-    use BelongsToTenants;
+    //
 }
