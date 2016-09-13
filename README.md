@@ -63,6 +63,10 @@ For example, you might have a `companies` table, and a bunch of other tables tha
 
 ### Adding and Removing Tenants
 
+> **IMPORTANT NOTE:** Landlord is stateless. This means that when you call `addTenant()`, it will only scope the *current request*.
+> 
+> Make sure that you are adding your tenants in such a way that it happens on every request, and before you need Models scoped, like in a middleware or as part of a stateless authentication method like OAuth.
+
 You can tell Landlord to automatically scope by a given Tenant by calling `addTenant()`, either from the `Landlord` facade, or by injecting an instance of `TenantManager()`.
 
 You can pass in either a tenant column and id:
@@ -107,10 +111,6 @@ And if for some reason you need to, you can retrieve Landlord's tenants:
 // $tenants is a Laravel Collection object, in the format 'tenant_id' => 1
 $tenants = Landlord::getTenants();
 ```
-
-> **IMPORTANT NOTE:** Landlord is stateless. This means that when you call `addTenant()`, it will only scope the *current request*.
-> 
-> Make sure that you are adding your tenants in such a way that it happens on every request, and before you need Models scoped, like in a middleware or as part of a stateless authentication method like OAuth.
 
 ### Setting up your Models
 
