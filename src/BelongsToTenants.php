@@ -21,7 +21,7 @@ trait BelongsToTenants
      * Boot the trait. Will apply any scopes currently set, and
      * register a listener for when new models are created.
      */
-    public static function bootBelongsToTenant()
+    public static function bootBelongsToTenants()
     {
         // Grab our singleton from the container
         static::$landlord = app(TenantManager::class);
