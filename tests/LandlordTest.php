@@ -103,7 +103,7 @@ class ModelStub extends Model
 {
     use BelongsToTenants;
 
-    public $tenants = ['tenant_a_id'];
+    public $tenantColumns = ['tenant_a_id'];
 }
 
 class TenantA extends Model

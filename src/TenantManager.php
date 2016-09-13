@@ -28,7 +28,7 @@ class TenantManager
     }
 
     /**
-     * Enable scoping by tenants.
+     * Enable scoping by tenantColumns.
      *
      * @return void
      */
@@ -38,7 +38,7 @@ class TenantManager
     }
 
     /**
-     * Disable scoping by tenants.
+     * Disable scoping by tenantColumns.
      *
      * @return void
      */
@@ -121,9 +121,9 @@ class TenantManager
             return;
         }
 
-        $this->modelTenants($model)->each(function ($id, $tenant) use ($model) {
-            if (!isset($model->{$tenant})) {
-                $model->setAttribute($tenant, $id);
+        $this->modelTenants($model)->each(function ($tenantId, $tenantColumn) use ($model) {
+            if (!isset($model->{$tenantColumn})) {
+                $model->setAttribute($tenantColumn, $tenantId);
             }
         });
     }
@@ -165,7 +165,7 @@ class TenantManager
     }
 
     /**
-     * Get the tenants that are actually applicable to the given
+     * Get the tenantColumns that are actually applicable to the given
      * model, in case they've been manually specified.
      *
      * @param Model|BelongsToTenants $model
@@ -174,6 +174,6 @@ class TenantManager
      */
     protected function modelTenants(Model $model)
     {
-        return $this->tenants->only($model->getTenants());
+        return $this->tenants->only($model->getTenantColumns());
     }
 }

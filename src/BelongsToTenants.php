@@ -2,7 +2,7 @@
 
 namespace HipsterJazzbo\Landlord;
 
-use HipsterJazzbo\Landlord\Exceptions\TenantModelNotFoundException;
+use HipsterJazzbo\Landlord\Exceptions\ModelNotFoundForTenantException;
 use HipsterJazzbo\Landlord\Facades\Landlord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -12,15 +12,37 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  */
 trait BelongsToTenants
 {
+    /**
+     * @var TenantManager
+     */
+    protected static $landlord;
+
+    /**
+     * Boot the trait. Will apply any scopes currently set, and
+     * register a listener for when new models are created.
+     */
     public static function bootBelongsToTenant()
     {
-        // Add a global scope for each tenant this model should be scoped by.
-        Landlord::applyTenantScopes(new static());
+        // Grab our singleton from the container
+        static::$landlord = app(TenantManager::class);
 
-        // Add tenants automatically when creating models
+        // Add a global scope for each tenant this model should be scoped by.
+        static::$landlord->applyTenantScopes(new static());
+
+        // Add tenantColumns automatically when creating models
         static::creating(function (Model $model) {
-            Landlord::newModel($model);
+            static::$landlord->newModel($model);
         });
+    }
+
+    /**
+     * Get the tenantColumns for this model.
+     *
+     * @return array
+     */
+    public function getTenantColumns()
+    {
+        return isset($this->tenantColumns) ? $this->tenantColumns : config('landlord.default_tenant_columns');
     }
 
     /**
@@ -32,17 +54,7 @@ trait BelongsToTenants
      */
     public static function allTenants()
     {
-        return Landlord::newQueryWithoutTenants(new static());
-    }
-
-    /**
-     * Get the tenants for this model.
-     *
-     * @return array
-     */
-    public function getTenants()
-    {
-        return isset($this->tenants) ? $this->tenants : config('landlord.default_tenants');
+        return static::$landlord->newQueryWithoutTenants(new static());
     }
 
     /**
