@@ -4,7 +4,7 @@ namespace HipsterJazzbo\Landlord\Exceptions;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class TenantModelNotFoundException extends ModelNotFoundException implements TenantExceptionInterface
+class ModelNotFoundForTenantException extends ModelNotFoundException implements TenantExceptionInterface
 {
     /**
      * @param string $model
