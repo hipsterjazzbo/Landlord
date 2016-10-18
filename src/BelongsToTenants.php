@@ -3,7 +3,6 @@
 namespace HipsterJazzbo\Landlord;
 
 use HipsterJazzbo\Landlord\Exceptions\ModelNotFoundForTenantException;
-use HipsterJazzbo\Landlord\Facades\Landlord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
