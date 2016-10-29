@@ -137,7 +137,7 @@ class TenantManager
      */
     public function newQueryWithoutTenants(Model $model)
     {
-        return $model->newQuery()->withoutGlobalScopes($this->tenants->keys());
+        return $model->newQuery()->withoutGlobalScopes($this->tenants->keys()->toArray());
     }
 
     /**
