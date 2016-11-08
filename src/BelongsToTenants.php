@@ -17,16 +17,32 @@ trait BelongsToTenants
     protected static $landlord;
 
     /**
+     * TenantManager::(BELONGS_TO_TENANT_TYPE_TO_ONE|BELONGS_TO_TENANT_TYPE_TO_MANY)
+     * @var string $belongsToTenantType
+     */
+    protected $belongsToTenantType = null;
+
+    /**
+     * @var array $morphRelation
+     */
+    protected $morphRelation = [];
+
+    /**
      * Boot the trait. Will apply any scopes currently set, and
      * register a listener for when new models are created.
      */
     public static function bootBelongsToTenants()
     {
+        $model = new static();
+
+        $belongsToTenantType = ! is_null($model->belongsToTenantType)
+            ? $model->belongsToTenantType : config('landlord.default_belongs_to_tenant_type');
+
         // Grab our singleton from the container
         static::$landlord = app(TenantManager::class);
 
         // Add a global scope for each tenant this model should be scoped by.
-        static::$landlord->applyTenantScopes(new static());
+        static::$landlord->applyTenantScopes($model, $belongsToTenantType);
 
         // Add tenantColumns automatically when creating models
         static::creating(function (Model $model) {
@@ -41,7 +57,8 @@ trait BelongsToTenants
      */
     public function getTenantColumns()
     {
-        return isset($this->tenantColumns) ? $this->tenantColumns : config('landlord.default_tenant_columns');
+        return isset($this->tenantColumns)
+            ? $this->tenantColumns : config('landlord.default_tenant_columns');
     }
 
     /**

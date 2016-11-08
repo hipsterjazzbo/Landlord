@@ -3,12 +3,17 @@
 namespace HipsterJazzbo\Landlord;
 
 use HipsterJazzbo\Landlord\Exceptions\TenantColumnUnknownException;
+use HipsterJazzbo\Landlord\Scopes\BelongsToManyTenants;
+use HipsterJazzbo\Landlord\Scopes\BelongsToOneTenant;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 class TenantManager
 {
+    const BELONGS_TO_TENANT_TYPE_TO_ONE = 'one';
+    const BELONGS_TO_TENANT_TYPE_TO_MANY = 'many';
+
     /**
      * @var bool
      */
@@ -95,19 +100,26 @@ class TenantManager
     /**
      * Applies applicable tenant scopes to a model.
      *
-     * @param Model $model
+     * @param Model  $model
+     * @param string $type
      */
-    public function applyTenantScopes(Model $model)
+    public function applyTenantScopes(Model $model, $type = self::BELONGS_TO_TENANT_TYPE_TO_ONE)
     {
         if (!$this->enabled) {
             return;
         }
 
-        $this->modelTenants($model)->each(function ($id, $tenant) use ($model) {
-            $model->addGlobalScope($tenant, function (Builder $builder) use ($tenant, $id, $model) {
-                $builder->where($model->getTable().'.'.$tenant, '=', $id);
-            });
-        });
+        switch ($type) {
+            case self::BELONGS_TO_TENANT_TYPE_TO_ONE:
+                $this->modelTenants($model)->each(function ($tenantId, $tenantColumn) use ($model) {
+                    $model->addGlobalScope(new BelongsToOneTenant($tenantColumn, $tenantId));
+                });
+                break;
+
+            case self::BELONGS_TO_TENANT_TYPE_TO_MANY:
+                $model->addGlobalScope(new BelongsToManyTenants($this));
+                break;
+        }
     }
 
     /**
@@ -174,6 +186,7 @@ class TenantManager
      */
     protected function modelTenants(Model $model)
     {
-        return $this->tenants->only($model->getTenantColumns());
+        return isset($this->belongsToTenantType) && $this->belongsToTenantType == TenantManager::BELONGS_TO_TENANT_TYPE_TO_ONE
+            ? $this->tenants->only($model->getTenantColumns()) : $this->tenants;
     }
 }
