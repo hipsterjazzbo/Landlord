@@ -1,5 +1,5 @@
 {
-    "name": "hipsterjazzbo/landlord",
+    "name": "victormacedo/landlord",
     "description": "A simple, single database multi-tenancy solution for Laravel 5.2+",
     "license": "MIT",
     "keywords": [
@@ -12,11 +12,15 @@
         {
             "name": "Caleb Fidecaro",
             "email": "calebfidecaro@gmail.com"
+        },
+        {
+            "name": "Victor Macedo",
+            "email": "victormacedomoura@gmail.com"
         }
     ],
     "require": {
         "php": ">=5.6.0",
-        "illuminate/support": "5.2.*|5.3.*"
+        "illuminate/support": "5.3.*"
     },
     "require-dev": {
         "mockery/mockery": "~0.9",

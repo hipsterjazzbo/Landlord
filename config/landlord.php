@@ -17,7 +17,38 @@ return [
     | `companies` table.
     |
     */
-
     'default_tenant_columns' => ['company_id'],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Tenant Morph Relation
+    |--------------------------------------------------------------------------
+    |
+    | For cases of 1 model belongs to N tenants, then one single table control
+    | all relations between models and tenants. Using `Many To Many Polymorphic Relations`.
+    | https://laravel.com/docs/5.3/eloquent-relationships#many-to-many-polymorphic-relations
+    |
+    | For example:
+    | clients
+    |   id - integer
+    |   name - string
+    |
+    | users
+    |   id - integer
+    |   name - string
+    |
+    | tenants
+    |   id - integer
+    |
+    | tenant_has                        @param default_morph_relation.table
+    |   tenant_id - integer             @param default_morph_relation.related_tenant_id_column
+    |   tenant_has_model_id - integer   @param default_morph_relation.related_model_id_column
+    |   tenant_has_model_type - string  @param default_morph_relation.related_model_type_column
+    */
+    'default_morph_relation' => [
+        'tenant_model'              => 'App\Tenant',
+        'tenant_relations_model'    => 'App\TenantRelations'
+    ],
+
+    'default_belongs_to_tenant_type' => \HipsterJazzbo\Landlord\TenantManager::BELONGS_TO_TENANT_TYPE_TO_ONE,
 ];
