@@ -25,15 +25,12 @@ class BelongsToManyTenants implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $morphRelation = array_merge(
-            config('landlord.default_morph_relation'),
-            isset($model->morphRelation) && ! empty($model->morphRelation)
-                ? array_filter($model->morphRelation) : []
-        );
+        $tenant_model = $model->getTenantModel();
+        $tenant_relations_model = $model->getTenantRelationsModel();
 
-        $query = $model->morphToMany('App\Tenant', $morphRelation['table']);
+        $query = $model->morphToMany(get_class($tenant_model), $tenant_relations_model->getTable());
         $query->wherePivotIn(
-            "{$morphRelation['table']}.{$morphRelation['tenant_id_column']}",
+            "{$tenant_relations_model->getTable()}.{$tenant_relations_model->getForeignKey()}",
             $this->manager->getTenants()->values()->toArray()
         );
         $builder->mergeBindings($query->getQuery());

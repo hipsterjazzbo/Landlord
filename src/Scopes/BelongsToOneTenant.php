@@ -27,6 +27,6 @@ class BelongsToOneTenant implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $builder->where($model->getTable().'.'.$this->tenantColumn, '=', $this->tenantId);
+        $builder->where("{$model->getTable()}.{$this->tenantColumn}", '=', $this->tenantId);
     }
 }

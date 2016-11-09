@@ -17,17 +17,6 @@ trait BelongsToTenants
     protected static $landlord;
 
     /**
-     * TenantManager::(BELONGS_TO_TENANT_TYPE_TO_ONE|BELONGS_TO_TENANT_TYPE_TO_MANY)
-     * @var string $belongsToTenantType
-     */
-    protected $belongsToTenantType = null;
-
-    /**
-     * @var array $morphRelation
-     */
-    protected $morphRelation = [];
-
-    /**
      * Boot the trait. Will apply any scopes currently set, and
      * register a listener for when new models are created.
      */
@@ -35,19 +24,24 @@ trait BelongsToTenants
     {
         $model = new static();
 
-        $belongsToTenantType = ! is_null($model->belongsToTenantType)
-            ? $model->belongsToTenantType : config('landlord.default_belongs_to_tenant_type');
-
         // Grab our singleton from the container
         static::$landlord = app(TenantManager::class);
+        static::$landlord->setType(! is_null($model->belongsToTenantType)
+            ? $model->belongsToTenantType : config('landlord.default_belongs_to_tenant_type'));
 
         // Add a global scope for each tenant this model should be scoped by.
-        static::$landlord->applyTenantScopes($model, $belongsToTenantType);
+        static::$landlord->applyTenantScopes($model);
 
         // Add tenantColumns automatically when creating models
         static::creating(function (Model $model) {
             static::$landlord->newModel($model);
         });
+
+        if (static::$landlord->isRelatedByMany()) {
+            static::saved(function(Model $model){
+                static::$landlord->newModelRelatedToManyTenants($model);
+            });
+        }
     }
 
     /**
@@ -59,6 +53,59 @@ trait BelongsToTenants
     {
         return isset($this->tenantColumns)
             ? $this->tenantColumns : config('landlord.default_tenant_columns');
+    }
+
+    /**
+     * Get the tenantModel for this model.
+     *
+     * @return Model
+     */
+    public function getTenantModel()
+    {
+        $morphRelation = $this->getTenantMorphRelationConfiguration();
+        if (! class_exists($morphRelation['tenant_model'])) {
+            throw new \InvalidArgumentException('$tenant_model must be an valid and existent class name');
+        }
+
+        $tenantModel = new $morphRelation['tenant_model'];
+        if (! $tenantModel instanceof Model) {
+            throw new \InvalidArgumentException('$tenant_model must be an instance of Illuminate\Database\Eloquent\Model');
+        }
+
+        return $tenantModel;
+    }
+
+    /**
+     * Get the tenantRelationsModel for this model.
+     *
+     * @return Model
+     */
+    public function getTenantRelationsModel()
+    {
+        $morphRelation = $this->getTenantMorphRelationConfiguration();
+        if (! class_exists($morphRelation['tenant_relations_model'])) {
+            throw new \InvalidArgumentException('$tenant_relations_model must be an valid and existent class name');
+        }
+
+        $tenantRelationsModel = new $morphRelation['tenant_relations_model'];
+        if (! $tenantRelationsModel instanceof Model) {
+            throw new \InvalidArgumentException('$tenant_relations_model must be an instance of Illuminate\Database\Eloquent\Model');
+        }
+
+        return $tenantRelationsModel;
+    }
+
+    /**
+     * Get the tenantMorphRelation configured for this model.
+     *
+     * @return array
+     */
+    private function getTenantMorphRelationConfiguration()
+    {
+        $morphRelation = config('landlord.default_morph_relation');
+        $morphRelation+= isset($this->morphRelation) ? array_filter($this->morphRelation) : [];
+
+        return $morphRelation;
     }
 
     /**

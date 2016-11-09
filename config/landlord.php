@@ -46,10 +46,8 @@ return [
     |   tenant_has_model_type - string  @param default_morph_relation.related_model_type_column
     */
     'default_morph_relation' => [
-        'table'                     => 'tenant_has',
-        'tenant_id_column'          => 'tenant_id',
-        'related_model_id_column'   => 'related_model_id',
-        'related_model_type_column' => 'related_model_type'
+        'tenant_model'              => 'App\Tenant',
+        'tenant_relations_model'    => 'App\TenantRelations'
     ],
 
     'default_belongs_to_tenant_type' => \HipsterJazzbo\Landlord\TenantManager::BELONGS_TO_TENANT_TYPE_TO_ONE,

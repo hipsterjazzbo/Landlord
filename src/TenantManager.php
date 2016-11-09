@@ -25,6 +25,13 @@ class TenantManager
     protected $tenants;
 
     /**
+     * @var string 'one|'many'
+     */
+    protected $type = self::BELONGS_TO_TENANT_TYPE_TO_ONE;
+
+    private $possibleTypes = [self::BELONGS_TO_TENANT_TYPE_TO_ONE, self::BELONGS_TO_TENANT_TYPE_TO_MANY];
+
+    /**
      * Landlord constructor.
      */
     public function __construct()
@@ -64,7 +71,12 @@ class TenantManager
             $id = $tenant->getKey();
         }
 
-        $this->tenants->put($this->getTenantKey($tenant), $id);
+        $key = $this->getTenantKey($tenant);
+        if ($this->isRelatedByMany()) {
+            $key .= "_$id";
+        }
+
+        $this->tenants->put($key, $id);
     }
 
     /**
@@ -98,18 +110,56 @@ class TenantManager
     }
 
     /**
+     * Set type of relation (one|many)
+     *
+     * @param $type
+     */
+    public function setType($type)
+    {
+        if (! in_array($type, $this->possibleTypes)) {
+            throw new \InvalidArgumentException('$type must be "'.self::BELONGS_TO_TENANT_TYPE_TO_ONE.'" or "'.self::BELONGS_TO_TENANT_TYPE_TO_MANY.'"');
+        }
+
+        $this->type = $type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRelatedByMany()
+    {
+        return $this->getType() == self::BELONGS_TO_TENANT_TYPE_TO_MANY;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRelatedByOne()
+    {
+        return $this->getType() == self::BELONGS_TO_TENANT_TYPE_TO_ONE;
+    }
+
+    /**
      * Applies applicable tenant scopes to a model.
      *
      * @param Model  $model
      * @param string $type
      */
-    public function applyTenantScopes(Model $model, $type = self::BELONGS_TO_TENANT_TYPE_TO_ONE)
+    public function applyTenantScopes(Model $model)
     {
         if (!$this->enabled) {
             return;
         }
 
-        switch ($type) {
+        switch ($this->type) {
             case self::BELONGS_TO_TENANT_TYPE_TO_ONE:
                 $this->modelTenants($model)->each(function ($tenantId, $tenantColumn) use ($model) {
                     $model->addGlobalScope(new BelongsToOneTenant($tenantColumn, $tenantId));
@@ -129,7 +179,7 @@ class TenantManager
      */
     public function newModel(Model $model)
     {
-        if (!$this->enabled) {
+        if (!$this->enabled || $this->type == self::BELONGS_TO_TENANT_TYPE_TO_MANY) {
             return;
         }
 
@@ -137,6 +187,23 @@ class TenantManager
             if (!isset($model->{$tenantColumn})) {
                 $model->setAttribute($tenantColumn, $tenantId);
             }
+        });
+    }
+
+    /**
+     * Add model polymorphic relation to tenants.
+     *
+     * @param Model $model
+     */
+    public function newModelRelatedToManyTenants($model)
+    {
+        $this->modelTenants($model)->each(function($tenantId) use ($model) {
+            $tenant = ($model->getTenantModel())::find($tenantId);
+
+            $model->morphToMany(
+                get_class($model->getTenantModel()),
+                $model->getTenantRelationsModel()->getTable()
+            )->save($tenant);
         });
     }
 
