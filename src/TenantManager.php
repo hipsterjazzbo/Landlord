@@ -72,9 +72,6 @@ class TenantManager
         }
 
         $key = $this->getTenantKey($tenant);
-        if ($this->isRelatedByMany()) {
-            $key .= "_$id";
-        }
 
         $this->tenants->put($key, $id);
     }
@@ -224,23 +221,26 @@ class TenantManager
      *
      * @param string|Model $tenant
      *
-     * @throws TenantColumnUnknownException
-     *
      * @return string
+     * @throws TenantColumnUnknownException
      */
     protected function getTenantKey($tenant)
     {
+        $key = clone $tenant;
         if ($tenant instanceof Model) {
-            $tenant = $tenant->getForeignKey();
+            $key = $tenant->getForeignKey();
+            if ($this->isRelatedByMany()) {
+                $key .= "_{$tenant->getKey()}";
+            }
         }
 
-        if (!is_string($tenant)) {
+        if (!is_string($key)) {
             throw new TenantColumnUnknownException(
-                '$tenant must be a string key or an instance of \Illuminate\Database\Eloquent\Model'
+                '$key must be a string key or an instance of \Illuminate\Database\Eloquent\Model'
             );
         }
 
-        return $tenant;
+        return $key;
     }
 
     /**
