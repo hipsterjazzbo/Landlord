@@ -34,7 +34,6 @@ class BelongsToManyTenants implements Scope
         $builder->getQuery()->leftJoin(
             $tenant_relations_model->getTable(),
             function(JoinClause $join) use ($tenant_model, $tenant_relations_model, $model) {
-                // applying
                 /** @var Model $tenant_model */
                 /** @var Model $tenant_relations_model */
                 $join->on("{$tenant_relations_model->getTable()}.{$tenant_relations_model->getForeignKey()}", "=", "{$model->getTable()}.{$model->getKeyName()}");
