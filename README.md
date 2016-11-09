@@ -5,16 +5,14 @@
 ![StyleCI Status](https://styleci.io/repos/49851417/shield?branch=v2.0-wip)  
 ![Build Status](https://travis-ci.org/HipsterJazzbo/Landlord.svg?branch=v2.0-wip)
 
-A single database multi-tenancy package for Laravel & Lumen 5.2+.
-
-> **Upgrading from Landlord v1?** Make sure to read the [change log](CHANGELOG.md) to see what needs updating.
+Based on [HipsterJazzbo/Landlord](https://github.com/HipsterJazzbo/Landlord), a single database multi-tenancy package for Laravel & Lumen 5.2+.
 
 ## Installation
 
 To get started, require this package:
 
 ```bash
-composer require hipsterjazzbo/landlord
+composer require victormacedo/landlord
 ```
 
 ### Laravel
