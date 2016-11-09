@@ -40,10 +40,10 @@ return [
     | tenants
     |   id - integer
     |
-    | tenant_has                        @param default_morph_relation.table
-    |   tenant_id - integer             @param default_morph_relation.related_tenant_id_column
-    |   tenant_has_model_id - integer   @param default_morph_relation.related_model_id_column
-    |   tenant_has_model_type - string  @param default_morph_relation.related_model_type_column
+    | tenant_has
+    |   tenant_id - integer
+    |   tenant_has_model_id - integer
+    |   tenant_has_model_type - string
     */
     'default_morph_relation' => [
         'tenant_model'              => 'App\Tenant',

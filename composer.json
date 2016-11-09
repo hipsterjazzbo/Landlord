@@ -31,5 +31,11 @@
         "psr-4": {
             "HipsterJazzbo\\Landlord\\": "src/"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/HipsterJazzbo/Landlord"
+        }
+    ]
 }
