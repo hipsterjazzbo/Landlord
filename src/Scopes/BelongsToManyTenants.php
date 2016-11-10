@@ -26,6 +26,10 @@ class BelongsToManyTenants implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
+        if ($this->manager->getTenants()->isEmpty()) {
+            return;
+        }
+
         /** @var Model $tenant_model */
         $tenant_model = $model->getTenantModel();
         /** @var Model $tenant_relations_model */
@@ -37,14 +41,20 @@ class BelongsToManyTenants implements Scope
                 /** @var Model $tenant_model */
                 /** @var Model $tenant_relations_model */
                 $join->on("{$tenant_relations_model->getTable()}.{$tenant_relations_model->getForeignKey()}", "=", "{$model->getTable()}.{$model->getKeyName()}");
-                $join->where("{$tenant_relations_model->getTable()}.{$tenant_relations_model->getTable()}_type", "LIKE", "\"".str_replace("\\", "%", get_class($model))."\"");
-                $join->whereRaw("{$tenant_relations_model->getTable()}.{$tenant_model->getForeignKey()} IN (?)", $this->manager->getTenants());
+                $join->whereRaw("{$tenant_relations_model->getTable()}.{$tenant_relations_model->getTable()}_type LIKE \"".str_replace("\\", "%", get_class($model))."\"");
+                $join->whereRaw(
+                    "{$tenant_relations_model->getTable()}.{$tenant_model->getForeignKey()} IN (?)",
+                    [
+                        $this->manager->getTenants()->values()
+                    ]
+                );
 
                 if (method_exists($tenant_relations_model, "forceDelete")) {
                     $join->whereNull("{$tenant_relations_model->getTable()}.deleted_at");
                 }
             }
-        )->join(
+        )->whereNotNull("{$tenant_relations_model->getTable()}.{$tenant_relations_model->getKeyName()}");
+        $builder->getQuery()->join(
             $tenant_model->getTable(),
             function(JoinClause $join) use ($tenant_model, $tenant_relations_model, $model) {
                 $join->on("{$tenant_model->getTable()}.{$tenant_model->getKeyName()}", "=", "{$tenant_relations_model->getTable()}.{$tenant_model->getForeignKey()}");
