@@ -38,8 +38,11 @@ trait BelongsToTenants
         });
 
         if (static::$landlord->isRelatedByMany()) {
-            static::saved(function(Model $model){
+            static::created(function(Model $model){
                 static::$landlord->newModelRelatedToManyTenants($model);
+            });
+            static::updated(function(Model $model){
+                static::$landlord->newModelRelatedToManyTenants($model, true);
             });
         }
     }
@@ -144,5 +147,17 @@ trait BelongsToTenants
 
             throw $e;
         }
+    }
+
+    public function tenants()
+    {
+        if (static::$landlord->isRelatedByMany()) {
+            return $this->morphToMany(
+                get_class($this->getTenantModel()),
+                $this->getTenantRelationsModel()->getTable()
+            );
+        }
+
+        return null;
     }
 }

@@ -192,15 +192,15 @@ class TenantManager
      *
      * @param Model $model
      */
-    public function newModelRelatedToManyTenants($model)
+    public function newModelRelatedToManyTenants($model, $update = false)
     {
+        if ($update) {
+            $model->tenants()->detach();
+        }
+
         $this->modelTenants($model)->each(function($tenantId) use ($model) {
             $tenant = ($model->getTenantModel())::find($tenantId);
-
-            $model->morphToMany(
-                get_class($model->getTenantModel()),
-                $model->getTenantRelationsModel()->getTable()
-            )->save($tenant);
+            $model->tenants()->save($tenant);
         });
     }
 
