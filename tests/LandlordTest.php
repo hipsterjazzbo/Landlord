@@ -97,6 +97,17 @@ class LandlordTest extends TestCase
 
         $this->assertNull($model->tenant_b_id);
     }
+
+    public function testGetTenantId()
+    {
+        $landlord = new TenantManager();
+
+        $landlord->addTenant('tenant_a_id', 1);
+
+        $tenantId = $landlord->getTenantId('tenant_a_id');
+
+        $this->assertEquals(1, $tenantId);
+    }
 }
 
 class ModelStub extends Model

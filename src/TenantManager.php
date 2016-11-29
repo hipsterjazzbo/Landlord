@@ -93,6 +93,24 @@ class TenantManager
     }
 
     /**
+     * @param $tenant
+     *
+     * @throws TenantColumnUnknownException
+     *
+     * @return mixed
+     */
+    public function getTenantId($tenant)
+    {
+        if (!$this->hasTenant($tenant)) {
+            throw new TenantColumnUnknownException(
+                '$tenant must be a string key or an instance of \Illuminate\Database\Eloquent\Model'
+            );
+        }
+
+        return $this->tenants->get($this->getTenantKey($tenant));
+    }
+
+    /**
      * Applies applicable tenant scopes to a model.
      *
      * @param Model $model
