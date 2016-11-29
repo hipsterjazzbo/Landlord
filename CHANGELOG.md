@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v2.0.3] - 2016-11-30
+### Changed
+- Fixed Lumen compatibility by checking for presence of `config_path()` before trying to register publishable assets.
+
 ## [v2.0.2] - 2016-11-30
 ### Added
 - Added `getTenantId()` method
