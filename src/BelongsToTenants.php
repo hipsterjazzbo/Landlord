@@ -45,6 +45,19 @@ trait BelongsToTenants
     }
 
     /**
+     * Returns the qualified tenant (table.tenant). Override this if you need to
+     * provide unqualified tenants, for example if you're using a noSQL Database.
+     *
+     * @param mixed $tenant
+     *
+     * @return mixed
+     */
+    public function getQualifiedTenant($tenant)
+    {
+        return $this->getTable().'.'.$tenant;
+    }
+
+    /**
      * Returns a new query builder without any of the tenant scopes applied.
      *
      *     $allUsers = User::allTenants()->get();

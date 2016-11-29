@@ -113,7 +113,7 @@ class TenantManager
     /**
      * Applies applicable tenant scopes to a model.
      *
-     * @param Model $model
+     * @param Model|BelongsToTenants $model
      */
     public function applyTenantScopes(Model $model)
     {
@@ -123,7 +123,7 @@ class TenantManager
 
         $this->modelTenants($model)->each(function ($id, $tenant) use ($model) {
             $model->addGlobalScope($tenant, function (Builder $builder) use ($tenant, $id, $model) {
-                $builder->where($model->getTable().'.'.$tenant, '=', $id);
+                $builder->where($model->getQualifiedTenant($tenant), '=', $id);
             });
         });
     }
