@@ -123,7 +123,11 @@ class TenantManager
 
         $this->modelTenants($model)->each(function ($id, $tenant) use ($model) {
             $model->addGlobalScope($tenant, function (Builder $builder) use ($tenant, $id, $model) {
-                $builder->where($model->getQualifiedTenant($tenant), '=', $id);
+                if (is_array($id)) {
+                    $builder->whereIn($model->getQualifiedTenant($tenant), $id);
+                } else {
+                    $builder->where($model->getQualifiedTenant($tenant), '=', $id);
+                }
             });
         });
     }
