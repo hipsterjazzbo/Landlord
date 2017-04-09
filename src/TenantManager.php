@@ -159,7 +159,7 @@ class TenantManager
     }
 
     /**
-     * Get the key for a tenant, either form a Model instance or a string.
+     * Get the key for a tenant, either from a Model instance or a string.
      *
      * @param string|Model $tenant
      *
