@@ -41,7 +41,7 @@ class BelongsToManyTenants implements Scope
                 /** @var Model $tenant_model */
                 /** @var Model $tenant_relations_model */
                 $join->on("{$tenant_relations_model->getTable()}.{$tenant_relations_model->getForeignKey()}", "=", "{$model->getTable()}.{$model->getKeyName()}");
-                $join->whereRaw("{$tenant_relations_model->getTable()}.{$tenant_relations_model->getTable()}_type LIKE \"".str_replace("\\", "%", get_class($model))."\"");
+                $join->whereRaw("{$tenant_relations_model->getTable()}.{$tenant_relations_model->getTable()}_type = \"{$model->getMorphClass()}\"");
                 $join->whereRaw(
                     "{$tenant_relations_model->getTable()}.{$tenant_model->getForeignKey()} IN (?)",
                     [
