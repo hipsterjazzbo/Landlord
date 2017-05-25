@@ -3,6 +3,7 @@
 namespace HipsterJazzbo\Landlord;
 
 use HipsterJazzbo\Landlord\Exceptions\TenantColumnUnknownException;
+use HipsterJazzbo\Landlord\Exceptions\TenantNullIdException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -52,11 +53,17 @@ class TenantManager
      *
      * @param string|Model $tenant
      * @param mixed|null   $id
+     *
+     * @throws TenantNullIdException
      */
     public function addTenant($tenant, $id = null)
     {
-        if (func_num_args() == 1) {
+        if (func_num_args() == 1 && $tenant instanceof Model) {
             $id = $tenant->getKey();
+        }
+
+        if (is_null($id)) {
+            throw new TenantNullIdException('$id must not be null');
         }
 
         $this->tenants->put($this->getTenantKey($tenant), $id);
