@@ -70,6 +70,16 @@ trait BelongsToTenants
     }
 
     /**
+     * Returns a current Model with tenant scopes updated to include null tenants
+     *
+     * @return Model|void
+     */
+    public static function includeNull()
+    {
+        return static::$landlord->includeNull(new static());
+    }
+
+    /**
      * Override the default findOrFail method so that we can re-throw
      * a more useful exception. Otherwise it can be very confusing
      * why queries don't work because of tenant scoping issues.

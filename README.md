@@ -167,6 +167,15 @@ ExampleModel::find(2);
 >
 > Landlord will catch those exceptions, and re-throw them as `ModelNotFoundForTenantException`, to help you out :)
 
+If you need to query including records with a null tenant column, for exampl if you have default categories that can be added to by a tenant, you can use `includeNull()`:
+
+```php
+// Will include results with null tenant ID fields
+ExampleModel::includeNull()->all()
+
+ExampleModel::includeNull()->find(1)
+```
+
 If you need to query across all tenants, you can use `allTenants()`:
 
 ```php

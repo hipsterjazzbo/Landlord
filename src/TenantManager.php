@@ -154,6 +154,31 @@ class TenantManager
     }
 
     /**
+     * Get a new Model instance with tenant scopes applied to include null.
+     *
+     * @param Model $model
+     *
+     * @return Model|void
+     */
+    public function includeNull(Model $model)
+    {
+        if (!$this->enabled) {
+            return $model;
+        }
+
+        $model->newQuery()->withoutGlobalScopes($this->tenants->keys()->toArray());
+
+        $this->modelTenants($model)->each(function ($id, $tenant) use ($model) {
+            $model->addGlobalScope($tenant, function (Builder $builder) use ($tenant, $id, $model) {
+                $builder->where($model->getTable().'.'.$tenant, '=', $id);
+                $builder->orWhereNull($model->getTable().'.'.$tenant);
+            });
+        });
+
+        return $model;
+    }
+
+    /**
      * Get a new Eloquent Builder instance without any of the tenant scopes applied.
      *
      * @param Model $model
