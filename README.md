@@ -114,16 +114,16 @@ $tenants = Landlord::getTenants();
 
 ### Setting up your Models
 
-To set up a model to be scoped automatically, simply use the `BelongsToTenants` trait:
+To set up a model to be scoped automatically, simply use the `BelongsToTenant` trait:
 
 ```php
 
 use Illuminate\Database\Eloquent\Model;
-use HipsterJazzbo\Landlord\BelongsToTenants;
+use HipsterJazzbo\Landlord\BelongsToTenant;
 
 class ExampleModel extends Model
 {
-    use BelongsToTenants;
+    use BelongsToTenant;
 }
 ```
 
@@ -132,11 +132,11 @@ If you’d like to override the tenants that apply to a particular model, you ca
 ```php
 
 use Illuminate\Database\Eloquent\Model;
-use HipsterJazzbo\Landlord\BelongsToTenants;
+use HipsterJazzbo\Landlord\BelongsToTenant;
 
 class ExampleModel extends Model
 {
-    use BelongsToTenants;
+    use BelongsToTenant;
     
     public $tenantColumns = ['tenant_id'];
 }
@@ -144,7 +144,7 @@ class ExampleModel extends Model
 
 ### Creating new Tenant scoped Models
 
-When you create a new instance of a Model which uses `BelongsToTenants`, Landlord will automatically add any applicable Tenant ids, if they are not already set:
+When you create a new instance of a Model which uses `BelongsToTenant`, Landlord will automatically add any applicable Tenant ids, if they are not already set:
 
 ```php
 // 'tenant_id' will automatically be set by Landlord
