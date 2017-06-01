@@ -51,4 +51,5 @@ return [
     ],
 
     'default_belongs_to_tenant_type' => \HipsterJazzbo\Landlord\TenantManager::BELONGS_TO_TENANT_TYPE_TO_ONE,
+    'alias_id_column' => 'alias_id',
 ];
