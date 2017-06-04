@@ -33,7 +33,7 @@ Register the Facade if you’d like:
 ```php
     'aliases' => [
         ...
-        'Landlord'   => HipsterJazzbo\Landlord\Facades\Landlord::class,
+        'Landlord'   => HipsterJazzbo\Landlord\Facades\LandlordFacade::class,
     ],
 ```
 
