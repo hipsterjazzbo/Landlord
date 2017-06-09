@@ -21,11 +21,17 @@ class TenantManager
     protected $tenants;
 
     /**
+     * @var Collection
+     */
+    protected $deferredModels;
+
+    /**
      * Landlord constructor.
      */
     public function __construct()
     {
         $this->tenants = collect();
+        $this->deferredModels = collect();
     }
 
     /**
@@ -52,7 +58,7 @@ class TenantManager
      * Add a tenant to scope by.
      *
      * @param string|Model $tenant
-     * @param mixed|null   $id
+     * @param mixed|null $id
      *
      * @throws TenantNullIdException
      */
@@ -128,11 +134,38 @@ class TenantManager
             return;
         }
 
+        if ($this->tenants->isEmpty()) {
+            // No tenants yet, defer scoping to a later stage
+            $this->deferredModels->push($model);
+            return;
+        }
+
         $this->modelTenants($model)->each(function ($id, $tenant) use ($model) {
             $model->addGlobalScope($tenant, function (Builder $builder) use ($tenant, $id, $model) {
                 $builder->where($model->getQualifiedTenant($tenant), '=', $id);
             });
         });
+    }
+
+    /**
+     * Applies applicable tenant scopes to deferred model booted before tenants setup.
+     */
+    public function applyTenantScopesToDeferredModels()
+    {
+        $this->deferredModels->each(function ($model) {
+            /* @var Model|BelongsToTenants $model */
+            $this->modelTenants($model)->each(function ($id, $tenant) use ($model) {
+                if (!isset($model->{$tenant})) {
+                    $model->setAttribute($tenant, $id);
+                }
+
+                $model->addGlobalScope($tenant, function (Builder $builder) use ($tenant, $id, $model) {
+                    $builder->where($model->getQualifiedTenant($tenant), '=', $id);
+                });
+            });
+        });
+
+        $this->deferredModels = collect();
     }
 
     /**
@@ -143,6 +176,12 @@ class TenantManager
     public function newModel(Model $model)
     {
         if (!$this->enabled) {
+            return;
+        }
+
+        if ($this->tenants->isEmpty()) {
+            // No tenants yet, defer scoping to a later stage
+            $this->deferredModels->push($model);
             return;
         }
 
