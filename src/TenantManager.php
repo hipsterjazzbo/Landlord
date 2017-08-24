@@ -147,6 +147,10 @@ class TenantManager
                 }
 
                 $builder->where($model->getQualifiedTenant($tenant), '=', $id);
+                
+                if (method_exists($model, 'applyExtraTenantScopes')) {
+                    $model->applyExtraTenantScopes($builder, $tenant, $id);
+                }
             });
         });
     }
@@ -169,6 +173,10 @@ class TenantManager
                     }
 
                     $builder->where($model->getQualifiedTenant($tenant), '=', $id);
+                    
+                    if (method_exists($model, 'applyExtraTenantScopes')) {
+                        $model->applyExtraTenantScopes($builder, $tenant, $id);
+                    }
                 });
             });
         });
