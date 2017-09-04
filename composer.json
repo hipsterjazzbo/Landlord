@@ -27,5 +27,15 @@
         "psr-4": {
             "HipsterJazzbo\\Landlord\\": "src/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "HipsterJazzbo\\Landlord\\LandlordServiceProvider"
+            ],
+            "aliases": [
+                "HipsterJazzbo\\Landlord\\Facades\\Landlord"
+            ]
+        }
     }
 }
