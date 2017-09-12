@@ -1,5 +1,5 @@
 {
-    "name": "victormacedo/landlord",
+    "name": "Betalabs/landlord",
     "description": "A simple, single database multi-tenancy solution for Laravel 5.2+",
     "license": "MIT",
     "keywords": [
