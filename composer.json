@@ -16,16 +16,26 @@
     ],
     "require": {
         "php": ">=5.6.0",
-        "illuminate/support": "5.2.*|5.3.*|5.4.*"
+        "illuminate/support": "5.2.*|5.3.*|5.4.*|5.5.*"
     },
     "require-dev": {
         "mockery/mockery": "~0.9",
-        "phpunit/phpunit": "5.5.*",
-        "laravel/framework": "5.2.*|5.3.*|5.4.*"
+        "phpunit/phpunit": "5.5.*|6.0.*",
+        "laravel/framework": "5.2.*|5.3.*|5.4.*|5.5.*"
     },
     "autoload": {
         "psr-4": {
             "HipsterJazzbo\\Landlord\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "HipsterJazzbo\\Landlord\\LandlordServiceProvider"
+            ],
+            "aliases": {
+                "Landlord": "HipsterJazzbo\\Landlord\\Facades\\Landlord"
+            }
         }
     }
 }
