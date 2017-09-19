@@ -79,6 +79,21 @@ class LandlordTest extends TestCase
         $this->assertArrayNotHasKey('tenant_b_id', $model->getGlobalScopes());
     }
 
+    public function testApplyTenantScopesToDeferredModels()
+    {
+        $landlord = new TenantManager();
+
+        $model = new ModelStub();
+        $landlord->newModel($model);
+
+        $landlord->addTenant('tenant_a_id', 1);
+        $this->assertNull($model->tenant_a_id);
+
+        $landlord->applyTenantScopesToDeferredModels();
+
+        $this->assertEquals(1, $model->tenant_a_id);
+    }
+
     public function testNewModel()
     {
         $landlord = new TenantManager();
