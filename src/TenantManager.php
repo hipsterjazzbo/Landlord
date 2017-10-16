@@ -163,22 +163,22 @@ class TenantManager
     /**
      * Add the global scope to a single model
      *
-     * @param string|Model $tenant
-     * @param string $id
+     * @param string|Model $tenant_column
+     * @param string $tenant_id
      * @param Model $model
      */
-    private function addGlobalScopeToSingleModel($tenant, $id, $model)
+    private function addGlobalScopeToSingleModel($tenant_column, $tenant_id, $model)
     {
-        $model->addGlobalScope($tenant, function (Builder $builder) use ($tenant, $id, $model) {
+        $model->addGlobalScope($tenant_column, function (Builder $builder) use ($tenant_column, $tenant_id, $model) {
             if(!$this->enabled) {
                 return;
             }
 
-            if($this->getTenants()->first() && $this->getTenants()->first() != $id){
-                $id = $this->getTenants()->first();
+            if($this->getTenants()->first() && $this->getTenants()->first() != $tenant_id){
+                $tenant_id = $this->getTenants()->first();
             }
 
-            $builder->where($model->getQualifiedTenant($tenant), '=', $id);
+            $builder->where($model->getQualifiedTenant($tenant_column), '=', $tenant_id);
         });
     }
 
