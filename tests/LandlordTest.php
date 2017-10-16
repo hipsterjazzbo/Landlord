@@ -8,24 +8,6 @@ use PHPUnit\Framework\TestCase;
 
 class LandlordTest extends TestCase
 {
-    public function testApplyScopesQueryAllTenants()
-    {
-        app()->bind(TenantManager::class, function() {
-            $manager = \Mockery::mock(TenantManager::class);
-            $manager->shouldReceive('newQueryWithoutTenants')->andReturn([]);
-            $manager->shouldReceive('applyTenantScopes');
-            return $manager;
-        });
-
-        $landlord = new TenantManager();
-
-        $landlord->addTenant('tenant_a_id', 1);
-
-        $landlord->addTenant('tenant_b_id', 2);
-
-        $this->assertEquals([], ModelStub::allTenants());
-    }
-
     public function testTenantsWithStrings()
     {
         $landlord = new TenantManager();

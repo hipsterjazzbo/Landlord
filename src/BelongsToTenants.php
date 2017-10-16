@@ -66,8 +66,7 @@ trait BelongsToTenants
      */
     public static function allTenants()
     {
-        $model = new static();
-        return static::$landlord->newQueryWithoutTenants($model);
+        return static::$landlord->newQueryWithoutTenants(new static());
     }
 
     /**
