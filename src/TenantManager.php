@@ -142,10 +142,6 @@ class TenantManager
 
         $this->modelTenants($model)->each(function ($id, $tenant) use ($model) {
             $model->addGlobalScope($tenant, function (Builder $builder) use ($tenant, $id, $model) {
-                if($this->getTenants()->first() && $this->getTenants()->first() != $id){
-                    $id = $this->getTenants()->first();
-                }
-
                 $builder->where($model->getQualifiedTenant($tenant), '=', $id);
             });
         });
@@ -164,10 +160,6 @@ class TenantManager
                 }
 
                 $model->addGlobalScope($tenant, function (Builder $builder) use ($tenant, $id, $model) {
-                    if($this->getTenants()->first() && $this->getTenants()->first() != $id){
-                        $id = $this->getTenants()->first();
-                    }
-
                     $builder->where($model->getQualifiedTenant($tenant), '=', $id);
                 });
             });
