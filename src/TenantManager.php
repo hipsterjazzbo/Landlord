@@ -7,9 +7,12 @@ use HipsterJazzbo\Landlord\Exceptions\TenantNullIdException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Traits\Macroable;
 
 class TenantManager
 {
+    use Macroable;
+
     /**
      * @var bool
      */
