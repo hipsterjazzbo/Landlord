@@ -55,6 +55,22 @@ class TenantManager
     }
 
     /**
+     * Disable the scope for the duration of a given method.
+     *
+     * @param callable $callback
+     *
+     * @return mixed|void
+     */
+    public function disabledFor(callable $method)
+    {
+        $this->disable();
+
+        return tap($method(), function () {
+            $this->enable();
+        });
+    }
+
+    /**
      * Add a tenant to scope by.
      *
      * @param string|Model $tenant
