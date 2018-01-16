@@ -162,7 +162,7 @@ class TenantManager
                     $id = $this->getTenants()->first();
                 }
 
-                $builder->where($model->getQualifiedTenant($tenant), '=', $id)>orWhereNull($model->getQualifiedTenant($tenant));
+                $builder->where($model->getQualifiedTenant($tenant), '=', $id)->orWhereNull($model->getQualifiedTenant($tenant));
             });
         });
     }
