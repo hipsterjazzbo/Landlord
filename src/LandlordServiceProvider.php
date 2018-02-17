@@ -1,6 +1,6 @@
 <?php
 
-namespace HipsterJazzbo\Landlord;
+namespace Bissolli\Landlord;
 
 use Illuminate\Support\ServiceProvider;
 

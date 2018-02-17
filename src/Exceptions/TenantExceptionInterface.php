@@ -1,6 +1,6 @@
 <?php
 
-namespace HipsterJazzbo\Landlord\Exceptions;
+namespace Bissolli\Landlord\Exceptions;
 
 interface TenantExceptionInterface
 {
