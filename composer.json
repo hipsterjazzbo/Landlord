@@ -1,5 +1,5 @@
 {
-    "name": "hipsterjazzbo/landlord",
+    "name": "bissolli/landlord",
     "description": "A simple, single database multi-tenancy solution for Laravel 5.2+",
     "license": "MIT",
     "keywords": [
@@ -10,8 +10,8 @@
     ],
     "authors": [
         {
-            "name": "Caleb Fidecaro",
-            "email": "calebfidecaro@gmail.com"
+            "name": "Gustavo Bissolli",
+            "email": "gustavo.bissolli@gmail.com"
         }
     ],
     "require": {
@@ -25,16 +25,16 @@
     },
     "autoload": {
         "psr-4": {
-            "HipsterJazzbo\\Landlord\\": "src/"
+            "bissolli\\Landlord\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "HipsterJazzbo\\Landlord\\LandlordServiceProvider"
+                "bissolli\\Landlord\\LandlordServiceProvider"
             ],
             "aliases": {
-                "Landlord": "HipsterJazzbo\\Landlord\\Facades\\Landlord"
+                "Landlord": "bissolli\\Landlord\\Facades\\Landlord"
             }
         }
     }
