@@ -37,5 +37,6 @@
                 "Landlord": "bissolli\\Landlord\\Facades\\Landlord"
             }
         }
-    }
+    },
+    "version": "3.0.0"
 }
