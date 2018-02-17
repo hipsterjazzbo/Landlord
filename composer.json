@@ -25,18 +25,18 @@
     },
     "autoload": {
         "psr-4": {
-            "bissolli\\Landlord\\": "src/"
+            "Bissolli\\Landlord\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "bissolli\\Landlord\\LandlordServiceProvider"
+                "Bissolli\\Landlord\\LandlordServiceProvider"
             ],
             "aliases": {
-                "Landlord": "bissolli\\Landlord\\Facades\\Landlord"
+                "Landlord": "Bissolli\\Landlord\\Facades\\Landlord"
             }
         }
     },
-    "version": "3.0.1"
+    "version": "3.0.2"
 }
