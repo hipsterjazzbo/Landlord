@@ -1,14 +1,21 @@
 {
-    "name": "bissolli/landlord",
-    "description": "A simple, single database multi-tenancy solution for Laravel 5.2+",
+    "name": "bissolli/laravel-landlord",
+    "description": "A simple, single database multi-tenancy solution for Laravel",
+    "version": "3.0.3",
+    "homepage": "https://github.com/bissolli/laravel-landlord",
     "license": "MIT",
     "keywords": [
         "tenant",
         "tenancy",
         "multitenant",
-        "multitenancy"
+        "multitenancy",
+        "laravel"
     ],
     "authors": [
+        {
+            "name": "Caleb Fidecaro",
+            "email": "calebfidecaro@gmail.com"
+        },
         {
             "name": "Gustavo Bissolli",
             "email": "gustavo.bissolli@gmail.com"
@@ -37,6 +44,5 @@
                 "Landlord": "Bissolli\\Landlord\\Facades\\Landlord"
             }
         }
-    },
-    "version": "3.0.3"
+    }
 }
