@@ -41,9 +41,6 @@ trait BelongsToTenants
             static::created(function(Model $model){
                 static::$landlord->newModelRelatedToManyTenants($model);
             });
-            static::updated(function(Model $model){
-                static::$landlord->newModelRelatedToManyTenants($model, true);
-            });
         }
     }
 
