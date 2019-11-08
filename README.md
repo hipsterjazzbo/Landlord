@@ -1,5 +1,7 @@
 # Landlord for Laravel & Lumen 5.2+
 
+**IMPORTANT NOTE:** I do not use this anymore and have no plan to continue update it!
+
 ![Landlord for Laravel & Lumen 5.2+](readme-header.jpg)
 
 ![StyleCI Status](https://styleci.io/repos/49851417/shield?branch=v2.0-wip)  
